@@ -21,8 +21,8 @@ jobs:
     - name: 'Checkout Repo'
       uses: actions/checkout@v4
     
-    - name: 'Install JQ'
-      uses: dcarbone/install-jq-action@v2.1.0          
+    - name: 'Make script executable'
+      run: chmod +x ${{github.workspace}}/.github/workflows/gist_backup.sh        
     
     - name: 'Import Gists'
       shell: bash
