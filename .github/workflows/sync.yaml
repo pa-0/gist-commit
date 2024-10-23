@@ -46,7 +46,7 @@ jobs:
         for url in "${urls[@]}"
         do
         	gist="$(curl -s $url)"
-          rightnow="$(date +N%)"
+          rightnow="$(echo $(date +N%))"
         	filenameURL="$(echo $url | cut -f8 -d /)"
           filename="$filenameURL$rightnow"
         	subfolder="$filename"
