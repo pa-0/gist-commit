@@ -1,7 +1,7 @@
 name: Sync GitHub Gists
-on:
+on: 
   workflow_dispatch:
-permissions: write
+permissions: write-all
 env:
   API_TOKEN: ${{secrets.API_TOKEN}}
   GITHUB_TOKEN: ${{github.token}}
