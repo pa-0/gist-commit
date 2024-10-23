@@ -1,0 +1,55 @@
+name: Sync GitHub Gists
+on:
+  workflow_dispatch:
+permissions: write
+env:
+  API_TOKEN: ${{secrets.API_TOKEN}}
+  GITHUB_TOKEN: ${{github.token}}
+  TAG: ${{github.ref_name}}
+  TDATE: '2024OCT23'
+
+jobs:
+  sync:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+        #working-directory: ${{github.workspace}}
+    
+    steps:
+    
+    - name: 'Checkout Repo'
+      uses: actions/checkout@v4
+    
+    - name: 'Install JQ'
+      uses: dcarbone/install-jq-action@v2.1.0          
+    
+    - name: 'Import Gists'
+      shell: bash
+      run: |
+        GIST_URL=https://api.github.com/gists
+        ./.github/workflows/gist_backup.sh ./${{env.TDATE}}/my-gists
+        GIST_URL=api.github.com/gists/starred
+        ./.github/workflows/gist_backup.sh ./${{env.TDATE}}/starred-gists
+       
+        
+      #- name: 'Add & Commit'
+      #  uses: EndBug/add-and-commit@v9.1.4
+      #  with:
+      #    # The directory where your repository is located. You should use actions/checkout first to set it up
+      #    message: 'Imported via GitHub Action'
+      #    new_branch: "import_${{env.TDATE}}"
+
+    - name: 'Commit Changes'
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Gists imported ${{env.TDATE}} by GitHub Actions Bot"
+        branch: "import_${{env.TDATE}}"
+        tagging_message: "v${{env.TDATE}}"
+        add_options: '-u'
+        push_options: '--force'
+        skip_dirty_check: true    
+        skip_fetch: true    
+        skip_checkout: true
+        disable_globbing: true
+        create_branch: true
