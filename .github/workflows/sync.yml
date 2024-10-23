@@ -14,7 +14,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        #working-directory: ${{github.workspace}}
+        working-directory: ${{github.workspace}}
     
     steps:
     
@@ -28,9 +28,9 @@ jobs:
       shell: bash
       run: |
         GIST_URL=https://api.github.com/gists
-        ./.github/workflows/gist_backup.sh ./${{env.TDATE}}/my-gists
+        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/${{env.TDATE}}/my-gists
         GIST_URL=api.github.com/gists/starred
-        ./.github/workflows/gist_backup.sh ./${{env.TDATE}}/starred-gists
+        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/${{env.TDATE}}/starred-gists
        
         
       #- name: 'Add & Commit'
