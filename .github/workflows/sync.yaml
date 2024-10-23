@@ -45,11 +45,14 @@ jobs:
         do
         	gist="$(curl -s $url)"
           filename="$(echo $url | cut -f8 -d /)" 
+          cfilename="${filename%.*}"
+          file_clean="${cfilename//[^[:alnum:]]/_}"
+          finaln="$file_clean"
           num=1
-          while [[ -d $filename ]] ; do
+          while [[ -d $finaln ]] ; do
               let num++
           done
-        	subfolder="$filename$num"
+        	subfolder="$finaln$num"
         	
         	mkdir "$subfolder" 2>/dev/null
         
