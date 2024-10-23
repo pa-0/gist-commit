@@ -46,10 +46,9 @@ jobs:
         commit_message: "Gists imported ${{env.TDATE}} by GitHub Actions Bot"
         branch: "import_${{env.TDATE}}"
         tagging_message: "v${{env.TDATE}}"
-        add_options: '-u'
+        add_options: '--no-all --no-warn-embedded-repo'
         push_options: '--force'
         skip_dirty_check: true    
         skip_fetch: true    
-        skip_checkout: true
         disable_globbing: true
         create_branch: true
