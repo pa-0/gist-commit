@@ -53,8 +53,8 @@ jobs:
               let num++
           done
         	subfolder="$finaln$num"
-        	
-        	mkdir "$subfolder" 2>/dev/null
+          printf "$subfolder"
+        	mkdir -p "$subfolder" 2>/dev/null
         
         	readme="$subfolder/README.md"
         	echo "${descriptions[index]}" > "$readme"
