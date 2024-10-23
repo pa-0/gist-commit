@@ -15,10 +15,16 @@ jobs:
         shell: bash
         working-directory: ${{github.workspace}}
     steps:
-    - name: 'Checkout'
+    - name: 'Checkout Repo'
       uses: actions/checkout@v4
       with:
         cwd: ${{github.workspace}}
+    
+    - name: 'Install JQ'
+      # You may pin to the exact commit or the version.
+      # uses: dcarbone/install-jq-action@8867ddb4788346d7c22b72ea2e2ffe4d514c7bcb
+      uses: dcarbone/install-jq-action@v2.1.0          
+    
     - name: 'Gist to GitHub Import'
       id: strings
       shell: bash
