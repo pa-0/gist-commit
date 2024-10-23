@@ -28,17 +28,11 @@ jobs:
       shell: bash
       run: |
         GIST_URL=https://api.github.com/gists
-        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/${{env.TDATE}}/my-gists
+        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/my-gists
         GIST_URL=api.github.com/gists/starred
-        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/${{env.TDATE}}/starred-gists
-       
-        
-      #- name: 'Add & Commit'
-      #  uses: EndBug/add-and-commit@v9.1.4
-      #  with:
-      #    # The directory where your repository is located. You should use actions/checkout first to set it up
-      #    message: 'Imported via GitHub Action'
-      #    new_branch: "import_${{env.TDATE}}"
+        ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/starred-gists
+        find . -name ".git" -type d -maxdepth 3 -mindepth 3 -execdir rename -n 's|/\.|/|' {} + 
+      working-directory: ${{github.workspace}}
 
     - name: 'Commit Changes'
       uses: stefanzweifel/git-auto-commit-action@v5
@@ -52,3 +46,11 @@ jobs:
         skip_fetch: true    
         disable_globbing: true
         create_branch: true
+
+        
+    #- name: 'Add & Commit'
+    #  uses: EndBug/add-and-commit@v9.1.4
+    #  with:
+    #    # The directory where your repository is located. You should use actions/checkout first to set it up
+    #    message: 'Imported via GitHub Action'
+    #    new_branch: "import_${{env.TDATE}}"
