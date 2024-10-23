@@ -19,7 +19,7 @@
 #   GIST_URL=https://api.github.com/users/aprescott/gists gist-backup ~/gist-backups/aprescott
 #
 
-token=$(git config --get github.gist.oauth.token)
+token=$API_TOKEN
 url=${GIST_URL:-https://api.github.com/gists}
 
 usage() {
