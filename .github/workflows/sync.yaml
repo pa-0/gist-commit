@@ -40,20 +40,20 @@ jobs:
         descriptions=($descriptions)
         nb_comments=($nb_comments)
         comments_urls=($comments_urls)
-        
         index=0
-        
         for url in "${urls[@]}"
         do
         	gist="$(curl -s $url)"
-          rightnow="$(echo $(date +N%))"
-        	filenameURL="$(echo $url | cut -f8 -d /)"
-          filename="$filenameURL$rightnow"
-        	subfolder="$filename"
+          filename="$(echo $url | cut -f8 -d /)" 
+          num=1
+          while [[ -d $filename ]] ; do
+              let num++
+          done
+        	subfolder="$filename$num"
+        	
         	mkdir "$subfolder" 2>/dev/null
         
         	readme="$subfolder/README.md"
-        
         	echo "${descriptions[index]}" > "$readme"
         	echo -e "---------------\n" >> "$readme"
         	echo -n '### ' >> "$readme" # url will be h3 in markdown
