@@ -53,13 +53,13 @@ jobs:
               let num++
           done
         	subfolder="$finaln$num"
-          printf "$subfolder"
-        	mkdir -p "$subfolder" 2>/dev/null
+          echo "$subfolder"
+        	mkdir "$subfolder" 2>/dev/null
         
         	readme="$subfolder/README.md"
         	echo "${descriptions[index]}" > "$readme"
         	echo -e "---------------\n" >> "$readme"
-        	echo -n '### ' >> "$readme" # url will be h3 in markdown
+        	echo -n '### ' >> "$readme"
         	echo "$data" | jq -r .["$index"].html_url >> "$readme"
         	echo "$gist" > "$subfolder"/"$filename"
         	if [[ "${nb_comments[index]}" -ne 0 ]]
@@ -78,6 +78,5 @@ jobs:
       uses: EndBug/add-and-commit@v9.1.4
       with:
         # The directory where your repository is located. You should use actions/checkout first to set it up
-        cwd: ${{github.workspace}}
         message: 'Imported via GitHub Action'
         new_branch: "import_${{env.TDATE}}"
