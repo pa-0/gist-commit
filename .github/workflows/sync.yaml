@@ -21,8 +21,6 @@ jobs:
         working-directory: ${{github.workspace}}
     
     - name: 'Install JQ'
-      # You may pin to the exact commit or the version.
-      # uses: dcarbone/install-jq-action@8867ddb4788346d7c22b72ea2e2ffe4d514c7bcb
       uses: dcarbone/install-jq-action@v2.1.0          
     
     - name: 'Gist to GitHub Import'
@@ -31,7 +29,7 @@ jobs:
       run: |
         data="$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $API_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" 'https://api.github.com/users/pa-0/gists')"
         
-        IFS=$' ' # parsing the string
+        IFS=$' '
         urls="$(echo "$data" | jq -r .[].files | jq -r .[].raw_url)"
         descriptions="$(echo "$data" | jq -r .[].description)"
         nb_comments="$(echo "$data" | jq -r .[].comments)"
@@ -48,25 +46,25 @@ jobs:
         for url in "${urls[@]}"
         do
         	gist="$(curl -s $url)"
-        
-        	filename="$(echo $url | cut -f8 -d /)" # parse url to get filename
-        
+          rightnow="date +N%"
+        	filenameURL="$(echo $url | cut -f8 -d /)"
+          filename="$filenameURL$rightnow"
         	subfolder="$filename"
-        	mkdir "$subfolder" 2>/dev/null # create directory for each gist
+        	mkdir "$subfolder" 2>/dev/null
         
         	readme="$subfolder/README.md"
         
-        	echo "${descriptions[index]}" > "$readme" # write gist description
+        	echo "${descriptions[index]}" > "$readme"
         	echo -e "---------------\n" >> "$readme"
-        	echo -n "### " >> "$readme" # url will be h3 in markdown
-        	echo "$data" | jq -r .["$index"].html_url >> "$readme" # write url to gist.github.com
+        	echo -n '### ' >> "$readme" # url will be h3 in markdown
+        	echo "$data" | jq -r .["$index"].html_url >> "$readme"
         	echo "$gist" > "$subfolder"/"$filename" # write code
         	if [ "${nb_comments[index]}" -ne 0 ]
         	then
         	    comment="$(curl -s ${comments_urls[index]})"
         	    comment_body="$(echo $comment | jq -r .[].body)"
         	    echo -e "---------------\n\n" >> "$readme"
-        	    echo "$comment_body" >> "$readme" # write comments in README if there are any
+        	    echo "$comment_body" >> "$readme"
         	fi
         
         	echo -e "\e[033m" "$filename" : "\e[32m" DONE "\e[0m\n"
