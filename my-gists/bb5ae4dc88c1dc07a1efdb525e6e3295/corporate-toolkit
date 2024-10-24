@@ -1,0 +1,43 @@
+This is a useful list of programs to use on corporate laptops running windows. They shoul make the experience a bit more bearable.
+
+Process Explorer: have a better understanding on what the hell is running on your machine
+https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer
+
+Autoruns: when you have to disable stuff from the system startup
+https://docs.microsoft.com/en-us/sysinternals/downloads/autoruns
+
+Chocolatey: better way to install software
+https://chocolatey.org
+
+Powershell community extensions: better powershell experience
+https://github.com/Pscx/Pscx
+
+WSL: actual linux-on-windows
+https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+MobaXterm: more linux-y cygwin/WSL experience
+https://mobaxterm.mobatek.net
+
+LyncLogger: log Lync / Skype for business chats (use v1.1 since audio recording is broken)
+https://github.com/Zougi/LyncLogger/releases/tag/v1.1
+
+Greenshot: better screenshot tool
+https://getgreenshot.org
+
+px: use corporate proxy with less hassle
+https://github.com/genotrance/px
+(most python software will read proxy info from "http_proxy" and "https_proxy" environment variables)
+
+Vivaldi: cleaner browsing experience, most likely not restricted by group policy
+https://vivaldi.com
+
+KeePass: so you don't have your passwords in a text file (or god forbid, a Word document)
+https://keepass.info (get version 2)
+
+Ditto: clipboard manager (surprisingly useful!)
+https://ditto-cp.sourceforge.io
+pro tip: https://superuser.com/questions/482305/prevent-ditto-from-copying-in-keepass
+
+Draw.io: diagrams without the need for Visio
+https://www.draw.io
+desktop client: https://github.com/jgraph/drawio-desktop/releases

@@ -1,0 +1,6 @@
+# with the following exclusions
+
+*.m~
+*.DS_Store
+*._*
+*~*

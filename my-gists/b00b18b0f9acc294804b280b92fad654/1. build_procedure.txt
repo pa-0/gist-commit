@@ -1,0 +1,106 @@
+Prerequisites :
+1. Windows 10 host
+2. Visual Studio 2019 and higher with latest Windows SDK
+3. 150 GB free space
+4. The following tools should be installed :
+  a) Cmake 3.20 and higher ( https://cmake.org/ )
+  b) Strawberry Perl ( https://strawberryperl.com/ )
+  c) Python 3 and higher ( https://www.python.org/downloads/windows/ )
+  d) OpenSSL binaries and libraries v1.1.x ( not 3.x ) from :https://slproweb.com/download/Win64OpenSSL-1_1_1s.exe
+5. Make sure that all tools have added themselves to PATH environment variable
+6. Prepare the dev-tools directory
+  a) Create directory named "dev-tools" on any disk ( better on disk C: - C:\dev-tools )
+  b) Create in directory "dev-tools" two subdirectories :
+     i.  openssl\lib
+     ii. ninja
+   c) Download ninja tool from https://github.com/ninja-build/ninja/releases for windows and unpack the archive to folder dev-tools\ninja
+   d) Copy the following OpenSSL libraries from <OpenSSL Installation folder>\lib\VC\static to directory dev-tools\openssl\lib
+     i. libssl64MT.lib
+     ii. libcrypto64MT.lib
+   e) rename copied libraries in directory dev-tools\openssl to 
+      libssl64MT.lib -> libssl.lib
+      libcrypto64MT.lib -> libcrypto.lib
+   f) dev-tools directory should have now the following structure
+      |-C:\dev-tools
+             |-openssl
+                |-lib
+                    |-libssl.lib
+                    |-libcrypto.lib
+             |-ninja
+                 |-ninja.exe
+      
+7. Add folde dev-tools\openssl\lib abd dev-tools\ninja to a system PATH variable. It's required for building Qt projects.
+
+Building preparation.
+
+After setting up all prerequisites create a folder "qt-build-scripts" in any place and create there mentioned below files. For every created file copy content
+of the file with the same name in this gist and save all the files.
+1. build-qt6-win-static.bat
+2. download.py
+3. install_modules.py
+4. run-build.bat
+
+Copy a file, named "vswhere.exe" from MS Visual studio Installation to the script folder. 
+Usually this file resides at "C:\Program Files (x86)\Microsoft Visual Studio\Installer".
+If no such file, download it from the Internet.
+Now you should have the following files
+
+c:\qt-build-scripts
+    |- build-qt6-win-static.bat
+    |- download.py
+    |- install_modules.py
+    |- run-build.bat
+    |- vswhere.exe
+    
+    
+Now, edit the file "run-build.bat" accordingly to a system configuration. It's just a shortcut for running the main script - build-qt6-win-static.bat
+The run-build.bat file contains only one line : calling the build-qt6-win-static.bat with parameteres, e.g.
+
+call build-qt6-win-static.bat --qt-version=6.4 --qt-subversion=6.4.0 --devtools-path="C:\dev-tools" --source-root="D:\SDKs\Qt\6.4.0-static\src" --build-root="D:\SDKs\Qt\6.4.0-static" --vs-version=2019
+Where :
+
+--qt-version       - the main Qt version ( example : 6.4 - main trunk )
+--qt-subversion   - the Qt build ( example - 6.4.0 - actual version )
+--devtools-path   - the full path to "dev-tools" directory
+--source-root     - the full path to the foldere where Qt sources are, or will be downloaded. 
+                    If sources are already downloaded as archive, they should be unpacked to the following subdirectory, e.g.
+                    If --source-root is "C:\Qt\sources", then sources have to be unpacked to the folder "C:\Qt\sources\qt-everywhere-src-6.4.0"
+                    the substring "6.4.0" should be changed to the actual Qt build version
+--download          Downloads and unpqcks sources from Qt repository. The sources would be downloaded in our example to the folder "C:\Qt\sources\download"
+                    and unpacked to "C:\Qt\sources\qt-everywhere-src-6.4.0", where "6.4.0" is a version needed for a build.
+--erase-archive     The sources archive will be deleted after extraction for saving disk space
+--build-root        A root for Qt build. After successful build, it will contain intermediary folder "build" and a folder with actual static binaries
+                    and qmake.exe, which can be selected for adding Qt Kit.
+                    Example : if build root folder is "C:\Qt\6.4.0", thus after successful build it will look like :
+                    |--C:\Qt\6.4.0
+                        |--build
+                        |--msvc2019_64  < the name of this folder is built from actual MS Visual Studio compiler version ( see the next parameter )
+                            |--bin
+                                qmake.exe
+--vs-version      A version of Visual Studio used for the build. Supported versions : 2019 and higher.
+
+Configure script notes .
+To alter the default configuration ( remove or add Qt features ), look at the following line in build-qt6-win-static.bat
+
+call %QT_SOURCES_FOLDER%/configure.bat 
+this script contains a list of Qt components and can be changed, accordingly to the needs.
+Look into documentation about Qt configure script at https://doc.qt.io/qt-6/windows-building.html
+
+BEFORE BUILD :
+
+If OpenSSL installed in default path e.g. C:\OpenSSL-Win64, rename the folder to something like C:\penSSL-Win64 before building a static Qt.
+
+Build process :                    
+Enter the folder where script created run a command prompt from there and type: run-build.bat
+The build takes about 2-4 hours, depending of hardware configuration.
+Important : do not delete folders "build" and folder with sources. A static project compilation requires those folders.
+
+After successful build it's possible to add a new Qt kit with Visual Studio Qt plug-in, or Qt Creator Kit manager.
+The projects, which are using the static build must be compiled with static runtime linking, e.g. with VS compiler options /MT and /MTd ( for release and debug respectively ).
+
+Visual studio specific issues . 
+  Sometimes, a full build does not compile and links needed static plugins.
+  Pay attention, that build process ( output window ) compile files, called qtvars_plugin_import.cpp.
+  Without compiling those files the program won't run, showing error either about platform plugin, or lack of TLS support ( if using SSL connections )
+  If files do not compile, just re-run Build solution command.
+  

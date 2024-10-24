@@ -1,0 +1,14 @@
+Operator, Purpose, For DataType
+=, Equal to operation, string
+==, Equal to operation, string
+!=, is not equal to, string
+<, is less than in ASCII alphabetical order, string
+>, is greater than in ASCII alphabetical order, string
+-z, if a string is empty (or null), string
+-n, if a string is not empty (or not null), string
+-eq, is equal to, number
+-ne, is not equal to, number
+-lt, is less than, number
+-le, is less than or equal to, number
+-gt, is greater than, number
+-ge, is greater than or equal to, number

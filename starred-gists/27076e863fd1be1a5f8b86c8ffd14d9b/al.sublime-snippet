@@ -1,0 +1,13 @@
+<snippet>
+	<scope>source.js</scope>
+	<scope>source.es</scope>
+	<scope>meta.whitespace.es</scope>
+	<description>aleeeeee</description>
+	<content><![CDATA[
+window.alert('ss');
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<!-- <tabTrigger>hello</tabTrigger> -->
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+
+</snippet>

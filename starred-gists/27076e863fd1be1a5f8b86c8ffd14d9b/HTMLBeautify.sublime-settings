@@ -1,0 +1,5 @@
+{
+// this signals when tags should be unindented (see tags above)
+"tag_unindent":
+"\\{% end|</html|</head|</body|</div|</a|</nav|</ul|</ol|</dl|</li|</table|</thead|</tbody|</tr|</th|</td|</blockquote|</select|</form|</option|</optgroup|</fieldset|</legend|</label|</header|</main|</section|</aside|</footer|</figure|</video|</span|</p|</g|</svg",
+}

@@ -1,0 +1,1 @@
+alias s='source /Users/nwb/OneDrive/dotfiles/bash/profile.txt'

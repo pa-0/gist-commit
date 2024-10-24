@@ -1,0 +1,48 @@
+Just some notes on git ...
+Install git from git-scm.com
+https://www.youtube.com/watch?v=SWYqp7iY_Tc
+https://guides.github.com/activities/hello-world/   # Quick guide from GitHub
+
+Create folder and put stuff in it.
+# git init
+# git add <filename>    # add <filename>
+# git add .             # add all files in folder
+# git status            # show added / not added / changed files
+# git commit -m "stuff" # need to add a comment when committing
+
+Create a .gitinogre file in the root of the folder
+In this file, "filename" (without the ") to ignore that file, and "/dir" to ignore a dir completely
+git status will not show the ignored files and folders.
+
+GitHub: go there and create an account.
+Create new repository in there and give a description
+Private projects are paid $7/month or $25/month for a 5-user project
+Note that you can have unlimited *private* Gists though.
+
+Create a README.md (MarkDown) to display project info.
+Copy the link (something like https://github.com/roysubs/myproject)
+Add .git to the end of that
+
+# git remote add origin https://github.com/roysubs/myproject.git
+
+# git remote   # will say "origin"
+
+# git push -u origin master   # will prompt for credentials then push to the "myproject" repo
+The project will now show the files: https://github.com/roysubs/myproject
+
+After this, can just do:
+# git push
+
+To clone another repo, copy the link to clone the repo.
+Open a git console.
+# git clone <paste-line-here>
+Note!: The folder will be created *under* this level and in that folder the entire project will be there.
+
+==========
+
+# git pull origin master --allow-unrelated-histories
+    # Had to do this to force the merge to happen.
+# git clone https://github.com/roysubs/psprofile.git
+
+git checkout master
+git merge <stuff>

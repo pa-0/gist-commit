@@ -1,0 +1,157 @@
+
+How to run:
+cmd.exe /k start chrome "http://yourWebSite.com
+
+Registring new application 
+
+Search order: 
+- The current working directory.
+- The Windows directory only (no subdirectories are searched).
+- The Windows\System32 directory.
+- Directories listed in the PATH environment variable.
+- Recommended: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths
+
+
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\App Paths.
+
+New Key => application name + ".exe" (e.g. devenv2.exe, chrome.exe)
+Default Value ==> Path to application
+
+
+Example:
+
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\devenv.exe]
+@="C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\devenv2.exe]
+@="C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe"
+
+
+
+https://softwarerecs.stackexchange.com/questions/36151/which-software-to-light-pen-text-on-an-image
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\Lightshot.exe]
+@="D:\\Programme\\lightshot\\Lightshot.exe"
+
+
+===================
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\devenv.exe]
+@="C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\devenv2.exe]
+@="C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe]
+@="D:\\Programme\\PortableApps\\PortableApps\\FirefoxPortable\\FirefoxPortable.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\firefox2.exe]
+@="D:\\Programme\\LessPortableApps\\FirefoxPortable\\FirefoxPortable.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\chromium.exe]
+@="D:\\Programme\\PortableApps\\PortableApps\\Chromium\\ChromiumPortable.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\opera.exe]
+@="D:\\Programme\\PortableApps\\PortableApps\\OperaPortable\\OperaPortable.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe]
+@="C:\\Users\\USERNAME\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
+"Path"="C:\\Users\\USERNAME\\AppData\\Local\\Google\\Chrome\\Application"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\inkscape.exe]
+@="D:\\Programme\\PortableApps\\InkscapePortable\\App\\Inkscape\\inkscape.exe"
+"Path"="D:\\Programme\\PortableApps\\InkscapePortable\\App\\Inkscape\\python;D:\\Programme\\PortableApps\\InkscapePortable\\App\\Inkscape\\perl"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\Lightshot.exe]
+@="D:\\Programme\\LessPortableApps\\lightshot\\Lightshot.exe"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\notepad2.exe]
+@="D:\\Programme\\PortableApps\\Notepad++Portable\\Notepad++Portable.exe"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\sqlops.exe]
+@="D:\\Programme\\LessPortableApps\\sqlops-windows\\sqlops.exe"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\locate.exe]
+@="D:\\Programme\\LessPortableApps\\locate-3.1.11.7100\\locate32.exe"
+
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\updatedb.exe]
+@="D:\\Programme\\LessPortableApps\\locate-3.1.11.7100\\Updtdb32.exe"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\env.exe]
+@="D:\\Programme\\LessPortableApps\\EditEnvironmentVariables.lnk"
+
+
+EditEnvironmentVariables.lnk:
+C:\Windows\System32\rundll32.exe sysdm.cpl,EditEnvironmentVariables
+C:\Windows\system32
+
+
+
+
+Setting the default-path in the command-prompt:
+[HKEY_CURRENT_USER\Software\Microsoft\Command Processor]
+"AutoRun"="cd /D \"D:\\Stefan.Steiger\\Documents\\Visual Studio 2017\\Projects\""
+
+
+
+
+
+
+Kill snagit
+
+
+// with .exe, case-insensitive
+cscript /nologo "D:\Stefan.Steiger\Desktop\terminate.vbs" "Snagit32.exe"
+cscript /nologo "D:\Stefan.Steiger\Desktop\terminate.vbs" "SnagitEditor.exe"
+
+
+// without .exe, case-insensitive
+tskill Snagit32
+tskill SnagitEditor
+
+
+C:\Windows\System32\tskill.exe
+C:\Windows\System32\cscript.exe
+
+https://www.akadia.com/services/windows_registry.html
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run]
+"Notepad"="c:\windows\notepad.exe".
+
+
+
+======================== terminate.vbs ========================
+Set objArgs = WScript.Arguments
+strProcess = objArgs(0)
+strComputer = "."
+Set objWMIService = GetObject("winmgmts:{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set colProcesses = objWMIService.ExecQuery("Select * from Win32_Process Where Name ='" & strProcess & "'")
+
+If colProcesses.Count = 0 Then
+    Wscript.Echo strProcess & " is not running."
+Else
+    Wscript.Echo strProcess & " is running."
+    'Kill the process
+    For Each objProcess in colProcesses
+        objProcess.Terminate()
+    Next
+
+End If
+====================== End terminate.vbs ======================
+
+
+
+SQL-Server Manager:
+SQLServerManager[Version].msc

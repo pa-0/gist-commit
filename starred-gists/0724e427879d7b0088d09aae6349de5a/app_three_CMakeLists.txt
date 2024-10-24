@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.16)
+project(app_three)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(.)
+
+add_executable(app_three app_three.c)
+add_executable(ctl_one.c ctl_one.c)
+target_sources(app_three PUBLIC app_three.rc)
+target_sources(app_three PUBLIC ctl_one.rc)
+target_sources(app_three PUBLIC resource.h)
+target_sources(app_three PUBLIC app_three.rc)
+target_sources(app_three PUBLIC ctl_one.rc)
+target_sources(app_three PUBLIC resource.h)

@@ -1,0 +1,20 @@
+# Install Github CLI
+# winget install -e --id GitHub.cli
+
+# Log into Github
+# gh auth login
+
+$clonePath = "c:/all"
+$orgName = 'Your Org Name Goes Here!!!'
+
+New-Item -ItemType Directory -Force -Path $clonePath
+
+Push-Location $clonePath
+
+# Your non organization repos
+#gh repo list | ForEach-Object { gh repo clone $_.Split("`t")[0] }
+
+# Organization repos (first 100)
+gh repo list $orgName -L 100 | ForEach-Object { gh repo clone $_.Split("`t")[0] }
+
+Pop-Location

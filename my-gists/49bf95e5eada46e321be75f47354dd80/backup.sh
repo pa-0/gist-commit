@@ -1,0 +1,1 @@
+find /root -size -20M  -exec file {} \; |  grep ".*: .* text" | sed "s;\(.*\): .* text.*;\1;" > kalibackup.list && tar cvzf /mnt/hgfs/VMSharedFolder/en/kali-`date '+%m%d%y'`.tar.gz --files-from=kalibackup.list

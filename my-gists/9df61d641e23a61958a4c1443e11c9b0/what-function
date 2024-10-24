@@ -1,0 +1,185 @@
+# Find definitions for any Cmdlet, Function, Alias, External Script, Application, or Variable
+function what {   
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [ArgumentCompleter({ [Management.Automation.CompletionResult]::Command })]
+        $cmd,
+        [switch]$Examples
+    )
+    # Previously declared $cmd as [string]$cmd but this was wrong as cannot then handle arrays or anything else
+
+    function Write-Wrap {
+        [CmdletBinding()]Param( [parameter(Mandatory=1, ValueFromPipeline=1, ValueFromPipelineByPropertyName=1)] [Object[]]$chunk )
+        $Lines = @()
+        foreach ($line in $chunk) {
+            $str = ''; $counter = 0
+            $line -split '\s+' | % {
+                $counter += $_.Length + 1
+                if ($counter -gt $Host.UI.RawUI.BufferSize.Width) {
+                    $Lines += ,$str.trim()
+                    $str = ''
+                    $counter = $_.Length + 1
+                }
+                $str = "$str$_ "
+            }
+            $Lines += ,$str.trim()
+        }
+        $Lines
+    }
+
+    $deferr = 0; $type = ""
+    try { $type = ((gcm $cmd -EA silent).CommandType); if ($null -eq $type) { $deferr = 1 } } catch { $deferr = 1 }
+
+    if ($deferr -eq 1) {
+        if ($cmd -eq $null) { Write-Host "Object is `$null" ; return } 
+        Write-Host "`$object | ConvertTo-Json:" -F Cyan
+        $cmd | ConvertTo-Json
+        ""
+        Write-Host "(`$object).GetType()" -F Cyan -NoNewline ; Write-Host " (Below is: BaseType, Name, IsPublic, IsSerial, Module)"
+        ($cmd).GetType() | % { "$($_.BaseType), $($_.Name), $($_.IsPublic), $($_.IsSerializable), $($_.Module)" }
+        ""
+        Write-Host "`$object | Get-Member -Force" -F Cyan
+        $m = "" ; $cm = "" ; $sm = ""; $p = "" ; $ap = "" ; $cp = "" ; $np = "" ; $pp = "" ; $sp = "" ; $ms = ""
+        $msum = 0 ; $cmsum = 0 ; $smsum = 0 ; $psum = 0 ; $cpsum = 0 ; $apsum = 0 ; $spsum = 0 ; $ppsum = 0 ; $npsum = 0 ; $spsum = 0 ; $mssum = 0
+        $($cmd | Get-Member -Force) | % {
+            if ($_.MemberType -eq "Method") { if(!($m -like "*$($_.Name),*")) { $m += "$($_.Name), " ; $msum++ } }
+            if ($_.MemberType -eq "CodeMethod") { if(!($cm -like "*$($_.Name),*")) { $cm += "$($_.Name), " ; $cmsum++ } }
+            if ($_.MemberType -eq "ScriptMethod") { if(!($sm -like "*$($_.Name),*")) { $sm += "$($_.Name), " ; $smsum++ } }
+            if ($_.MemberType -eq "Property") { if(!($p -like "*$($_.Name),*")) { $p += "$($_.Name), " ; $psum++ } }
+            if ($_.MemberType -eq "AliasProperty") { if(!($ap -like "*$($_.Name),*")) { $ap += "$($_.Name), " ; $apsum++ } }
+            if ($_.MemberType -eq "CodeProperty") { if(!($cp -like "*$($_.Name),*")) { $cp += "$($_.Name), " ; $cpsum++ } }
+            if ($_.MemberType -eq "NoteProperty") { if(!($np -like "*$($_.Name),*")) { $np += "$($_.Name), " ; $npsum++ } }
+            if ($_.MemberType -eq "ParameterizedProperty") { if(!($pp -like "*$($_.Name),*")) { $pp += "$($_.Name), " ; $ppsum++} }
+            if ($_.MemberType -eq "ScriptProperty") { if(!($sp -like "*$($_.Name),*")) { $sp += "$($_.Name), " ; $npsum++ } }
+            if ($_.MemberType -eq "MemberSet") { if(!($ms -like "*$($_.Name),*")) { $ms += "$($_.Name), " ; $mssum++ } }
+            # AliasProperty, CodeMethod, CodeProperty, Method, NoteProperty, ParameterizedProperty, Property, ScriptMethod, ScriptProperty
+            # All, Methods, MemberSet, Properties, PropertySet
+        }
+        if($msum -ne 0) { Write-Wrap ":: Method [$msum] => $($m.TrimEnd(", "))" }
+        if($msum -ne 0) { Write-Wrap ":: CodeMethod [$cmsum] => $($cm.TrimEnd(", "))" }
+        if($msum -ne 0) { Write-Wrap ":: ScriptMethod [$smsum] => $($sm.TrimEnd(", "))" }
+        if($psum -ne 0) { Write-Wrap ":: Property [$psum] => $($p.TrimEnd(", "))" }
+        if($npsum -ne 0) { Write-Wrap ":: AliasProperty [$apsum] => $($ap.TrimEnd(", "))" }
+        if($npsum -ne 0) { Write-Wrap ":: CodeProperty [$cpsum] => $($cp.TrimEnd(", "))" }
+        if($npsum -ne 0) { Write-Wrap ":: NoteProperty [$npsum] => $($np.TrimEnd(", "))" }
+        if($ppsum -ne 0) { Write-Wrap ":: ParameterizedProperty [$ppsum] => $($pp.TrimEnd(", "))" }
+        if($spsum -ne 0) { Write-Wrap ":: ScriptProperty [$spsum] => $($sp.TrimEnd(", "))" }
+        if($mssum -ne 0) { Write-Wrap ":: ScriptProperty [$mssum] => $($ms.TrimEnd(", "))" }
+        ""
+        Write-Host "`$object | Measure-Object" -F Cyan
+        $cmd | Measure-Object | % { "Count [$($_.Count)], Average [$($_.Average)], Sum [$($_.Sum)], Maximum [$($_.Maximum)], Minimum [$($_.Minimum)], Property [$($_.Property)]" }
+    }
+
+    if ($deferr -eq 0) {
+
+        if ($cmd -like '*`**') { Get-Command $cmd ; break }   # If $cmd contains a *, then just check for commands, don't find definitions
+   
+        if ($type -eq 'Cmdlet') {
+            Write-Host "`n'$cmd' is a Cmdlet:`n" -F Green
+            Write-Host "SYNOPSIS, DESCRIPTION, SYNTAX for '$cmd'.   " -F Green
+            Write-Host "------------"
+            Write-Host ""
+            Write-Host "(Get-Help $cmd).Synopsis" -F Cyan 
+            Write-Host "$((Get-Help $cmd).Synopsis)"
+            Write-Host ""
+            Write-Host "(Get-Help $cmd).Description.Text" -F Cyan
+            try {
+                $arrdescription = (Get-Help $cmd).Description.Text.split("`n")
+                foreach ($i in $arrdescription) { Write-Wrap $i }
+            } catch { "Could not resolve description for $cmd" }
+            Write-Host ""
+            Write-Host "(Get-Command $cmd -Syntax)" -F Cyan
+            $arrsyntax = (Get-Command $cmd -syntax).TrimStart("").Split("`n")  # Trim empty first line then split by line breaks
+            foreach ($i in $arrsyntax) { Write-Wrap $i }   # Wrap lines properly to console width
+            Get-Alias -definition $cmd -EA silent          # Show all defined aliases
+            Write-Host "`nThis Cmdlet is in the '$((Get-Command -type cmdlet $cmd).Source)' Module." -F Green
+            Write-Host ""
+            Write-Host ""
+        }
+        elseif ($type -eq 'Alias') {
+            Write-Host "`n'$cmd' is an Alias.  " -F Green -NoNewLine ; Write-Host "This Alias is in the '$((get-command -type alias $cmd).ModuleName).' Module"
+            Write-Host ""
+            Write-Host "Get-Alias '$cmd'   *or*    cat alias:\$cmd" -F Cyan
+            $aliasdef = $(cat alias:\$cmd)   # Write-Host "$(cat alias:\$cmd)"   # "$((Get-Alias $cmd -EA silent).definition)"
+            if ($cmd -eq '?') { $cmd = '`?' }   # To deal correctly with the wildcard '?'
+            $cmdref = (Get-Alias $cmd).ReferencedCommand
+            if ($null -eq $cmdref) {
+                "`n'$((Get-Alias $cmd).Name)' is an alias of '$aliasdef', but '$aliasdef' is not a defined command."
+                "cat alias:\$cmd                     =>  $aliasdef"
+                "(Get-Alias $cmd).ReferencedCommand  =>  `$null"
+            } else {
+                "`n'$((Get-Alias $cmd).Name)' is an alias of '$cmdref'"   # $((Get-Alias $cmd).ReferencedCommand)
+                $fulldef = (Get-Alias $cmd -EA silent).definition   # Rerun def but using the full cmdlet or function name.
+                def $fulldef
+                if ($Examples -eq $true) { $null = Read-Host 'Press any key to view command examples' ; get-help $fulldef -examples }
+            }
+        }
+        elseif ($type -eq 'Function') {
+            Write-Host "`n'$cmd' is a Function.  " -F Green -NoNewline
+            Write-Host "`ncat function:\$cmd   (show contents of function)`n" -F Cyan
+            if ($bat = Get-Command bat -ErrorAction Ignore) {
+                (Get-Content function:$cmd) | & $bat -pp -l powershell
+            } else {
+                cat function:\$cmd ; Write-Host ""
+            }
+            Write-Host "cat function:\$cmd`n" -F Cyan
+            Write-Host ""
+            Write-Host "SYNOPSIS, SYNTAX for '$cmd'.   " -F Green
+            Write-Host "------------"
+            $arrsynopsis = ((Get-Help $cmd).Synopsis).TrimStart("").Split("`n")  # Trim empty first line then split by line breaks
+            $arrsyntax = (Get-Command $cmd -syntax).TrimStart("").Split("`n")    # Often synopsis=syntax for function so use Compare-Object
+            if ($null -eq $(Compare-Object $arrsynopsis $arrsyntax -SyncWindow 0)) { 
+                Write-Host "'(Get-Help $cmd).Synopsis'" -F Cyan -N
+                Write-Host " and " -N
+                Write-Host "'Get-Command $cmd -Syntax'" -F Cyan -N
+                Write-Host " have the same output for this function:`n"
+                foreach ($i in $arrsynopsis) { Write-Wrap $i }   # Wrap lines properly to console width
+            } else { 
+                Write-Host "(Get-Help $cmd).Synopsis" -F Cyan
+                foreach ($i in $arrsynopsis) { Write-Wrap $i }   # Wrap lines properly to console width
+                Write-Host ""
+                Write-Host "Get-Command $cmd -Syntax" -F Cyan
+                foreach ($i in $arrsyntax) { Write-Wrap $i }     # Wrap lines properly to console width
+            }
+            Write-Host "The '$cmd' Function is in the '$((get-command -type function $cmd).Source)' Module." -F Green
+            Write-Host ""
+            if ($Examples -eq $true) { $null = Read-Host "Press any key to view command examples" ; get-help $cmd -examples }
+            Write-Host ""
+        }
+        elseif ($type -eq 'ExternalScript') {   # For .ps1 scripts on path
+            $x = gcm $cmd
+            Write-Host "`n'$cmd' is an ExternalScript (i.e. a .ps1 file on the path)." -F Green
+            Write-Host "`n$($x.Path)`n" -F Green
+            Write-Host "`n$($x.ScriptContents)"
+            Write-Host ""
+            if ($Examples -eq $true) { $null = Read-Host "Press any key to view command examples" ; get-help $cmd -Examples }
+            elseif ($Synopsis -eq $true) { $null = Read-Host "Press any key to view command examples" ; (get-help $cmd).Synopsis }
+            elseif ($Syntax -eq $true) { $null = Read-Host "Press any key to view command examples" ; Get-Command $cmd -Syntax }
+            Write-Host ""
+        }
+        elseif ($type -eq 'Application') {      # For .exe etc on path
+            Write-Host "`n'$cmd' was found. It is an Application (i.e. a .exe or similar located on the path)." -F Green
+            where.exe $cmd
+            Write-Host ""
+            Read-Host "Press any key to open cmd.exe and try '$cmd /?'" ; cmd.exe /c $cmd /? | more
+            Write-Host ""
+        }
+    } elseif ($null -ne (get-module -ListAvailable -Name $cmd -EA Silent)) {
+        # https://stackoverflow.com/questions/28740320/how-do-i-check-if-a-powershell-module-is-installed
+        ""
+        (get-module $cmd).path
+        (get-module $cmd).ExportedFunctions
+        "ExportedCommands (also note: get-command -Module $cmd)"
+        (get-module custom-tools).ExportedCommands
+        ""
+        echo "get-module $cmd | get-member  # Just show the members"
+        echo "get-module $cmd | fl *        # Show the contents of every member"
+    }
+    else {
+        if ($cmd.length -eq 0) { "`n'$cmd': No command definition found. The command may require to be surround by ' or `"`nif it contains special characters (such as 'def `"&`"').`n" }
+        else { "`nInput is not a command, so no command definition search.`n" }
+    }
+}
+
+Set-Alias def what   # Generally better to use "what" (def is used in various other languages), but I'll keep this aliased in PowerShell for convenience

@@ -1,0 +1,62 @@
+diff -ru openssl-1.0.2d/ms/do_win64a.bat openssl-1.0.2d-dbg/ms/do_win64a.bat
++++ openssl-1.0.2d\ms\do_nasm.bat	2015-12-03 19:51:01.000000000 +0300
+--- openssl-1.0.2d-msvc32-dbg\ms\do_nasm.bat	2016-03-01 23:29:00.231181100 +0300
+@@ -4,5 +4,5 @@
+ perl util\mk1mf.pl dll nasm VC-WIN32 >ms\ntdll.mak
+ perl util\mk1mf.pl nasm BC-NT >ms\bcb.mak
+ 
+-perl util\mkdef.pl 32 libeay > ms\libeay32.def
+-perl util\mkdef.pl 32 ssleay > ms\ssleay32.def
++perl util\mkdef.pl 32 libeay > ms\libeay32d.def
++perl util\mkdef.pl 32 ssleay > ms\ssleay32d.def
+--- openssl-1.0.2d/ms/do_win64a.bat	2015-06-11 17:44:27.000000000 +0300
++++ openssl-1.0.2d-dbg/ms/do_win64a.bat	2015-07-25 17:01:56.743521800 +0300
+@@ -15,5 +15,5 @@
+ perl util\mk1mf.pl VC-WIN64A >ms\nt.mak
+ perl util\mk1mf.pl dll VC-WIN64A >ms\ntdll.mak
+ 
+-perl util\mkdef.pl 32 libeay > ms\libeay32.def
+-perl util\mkdef.pl 32 ssleay > ms\ssleay32.def
++perl util\mkdef.pl 32 libeay > ms\libeay32d.def
++perl util\mkdef.pl 32 ssleay > ms\ssleay32d.def
+diff -ru openssl-1.0.2d/util/mkdef.pl openssl-1.0.2d-dbg/util/mkdef.pl
+--- openssl-1.0.2d/util/mkdef.pl	2015-07-09 14:57:15.000000000 +0300
++++ openssl-1.0.2d-dbg/util/mkdef.pl	2015-07-25 17:09:54.054765400 +0300
+@@ -1301,9 +1301,9 @@
+ 	my $description = "$what $version, $name - http://$http_vendor";
+ 
+ 	if ($W32)
+-		{ $libname.="32"; }
++		{ $libname.="32D"; }
+ 	elsif ($W16)
+-		{ $libname.="16"; }
++		{ $libname.="16D"; }
+ 	elsif ($OS2)
+ 		{ # DLL names should not clash on the whole system.
+ 		  # However, they should not have any particular relationship
+diff -ru openssl-1.0.2d/util/pl/VC-32.pl openssl-1.0.2d-dbg/util/pl/VC-32.pl
+--- openssl-1.0.2d/util/pl/VC-32.pl	2015-07-09 14:57:15.000000000 +0300
++++ openssl-1.0.2d-dbg/util/pl/VC-32.pl	2015-07-25 16:46:45.727122600 +0300
+@@ -3,17 +3,17 @@
+ # Win64 and WinCE [follow $FLAVOR variable to trace the differences].
+ #
+ 
+-$ssl=	"ssleay32";
+-$crypto="libeay32";
++$ssl=	"ssleay32d";
++$crypto="libeay32d";
+ 
+ if ($fips && !$shlib)
+ 	{
+-	$crypto="libeayfips32";
+-	$crypto_compat = "libeaycompat32.lib";
++	$crypto="libeayfips32d";
++	$crypto_compat = "libeaycompat32d.lib";
+ 	}
+ else
+ 	{
+-	$crypto="libeay32";
++	$crypto="libeay32d";
+ 	}
+ 
+ $o='\\';

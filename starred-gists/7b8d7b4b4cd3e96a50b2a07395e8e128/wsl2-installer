@@ -1,0 +1,10 @@
+This file for Windows 10, Windows 11 is only need 'wsl --install' command in priviledged cmd or ps. 
+
+# Usage
+
+run script and wait to steps.
+then second script which is need to run after reboot created itself in first script
+After finished first step just reboot
+Second will run automatically , will remove itself and unnecessary files
+
+Enjoy.

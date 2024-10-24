@@ -1,0 +1,77 @@
+--- ULID1.ahk
++++ ULID.ahk
+@@ -1 +1 @@
+-﻿#Requires AutoHotkey v1.1
++﻿#Requires AutoHotkey v2.0
+@@ -12,4 +11,0 @@
+-ULID(SeedTime := 0) {
+-    return ULID.Monotonic(SeedTime)
+-}
+-
+@@ -24 +20,5 @@
+-    Monotonic(SeedTime := 0) {
++    static Call(SeedTime := 0) {
++        return this.Monotonic(SeedTime)
++    }
++
++    static Monotonic(SeedTime := 0) {
+@@ -40 +40 @@
+-    Random(SeedTime := 0) {
++    static Random(SeedTime := 0) {
+@@ -47 +47 @@
+-    ReplaceCharAt(String, Index, Char) {
++    static ReplaceCharAt(String, Index, Char) {
+@@ -54 +54 @@
+-    IncrementBase32(Str) {
++    static IncrementBase32(Str) {
+@@ -63 +63 @@
+-                throw Exception("incorrectly encoded string", -1)
++                throw Error("incorrectly encoded string", -1)
+@@ -74 +74 @@
+-            throw Exception("cannot increment this string", -1)
++            throw Error("cannot increment this string", -1)
+@@ -79,2 +79,2 @@
+-    RandomChar() {
+-        Random rand, 1, this.ENCODING_LEN
++    static RandomChar() {
++        rand := Random(1, this.ENCODING_LEN)
+@@ -84,3 +84,3 @@
+-    EncodeTime(Now, Len) {
+-        if !(Now + 0) {
+-            throw Exception(Now " must be a number", -1)
++    static EncodeTime(Now, Len) {
++        if !(Now is Number) {
++            throw Error(Now " must be a number", -1)
+@@ -88 +88 @@
+-            throw Exception("cannot encode time greater than " this.TIME_MAX, -1)
++            throw Error("cannot encode time greater than " this.TIME_MAX, -1)
+@@ -90,3 +90,3 @@
+-            throw Exception("time must be positive", -1)
+-        } else if (InStr(Now, ".")) {
+-            throw Exception("time must be an integer", -1)
++            throw Error("time must be positive", -1)
++        } else if !(Now is Integer) {
++            throw Error("time must be an integer", -1)
+@@ -103 +103 @@
+-    EncodeRandom(Len) {
++    static EncodeRandom(Len) {
+@@ -111 +111 @@
+-    DecodeTime(Id) {
++    static DecodeTime(Id) {
+@@ -114 +114 @@
+-            throw Exception("malformed ulid", -1)
++            throw Error("malformed ulid", -1)
+@@ -121 +121 @@
+-            throw Exception("malformed ulid, timestamp too large", -1)
++            throw Error("malformed ulid, timestamp too large", -1)
+@@ -124 +124 @@
+-        for _, char in StrSplit(time) {
++        for (char in StrSplit(time)) {
+@@ -127 +127 @@
+-                throw Exception("invalid character found: " char, -1)
++                throw Error("invalid character found: " char, -1)
+@@ -134,2 +134,2 @@
+-    _DateNow() { ; JS' Date.now()
+-        DllCall("GetSystemTimeAsFileTime", "Int64*", ft := 0)
++    static _DateNow() { ; JS' Date.now()
++        DllCall("GetSystemTimeAsFileTime", "Int64*", &ft := 0)

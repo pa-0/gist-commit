@@ -1,0 +1,4 @@
+#!/bin/bash
+repo_url=git@github.com:phatblat/dotfiles.git
+repo=${repo_url##*/}
+echo ${repo%%.*}

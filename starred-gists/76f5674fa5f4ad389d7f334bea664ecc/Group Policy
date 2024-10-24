@@ -1,0 +1,14 @@
+Windows Components -> News and interests
+	- Enable news and interests on the taskbar: Enabled
+
+Windows Components -> Search
+	- Allow Cortana: Disabled
+	- Do not allow web search: Enabled
+	- Don't search the web or disable web results in Search: Enabled
+
+Network -> DNS Client
+	- Turn off smart multi-homed name resolution: Enabled
+
+System -> Device Installation -> Device Installation Restrictions
+	- Allow administrators to override Device Installation Restrictions policies: Enabled
+	- Prevent installation of devices that match any of theses device Ids: Enabled

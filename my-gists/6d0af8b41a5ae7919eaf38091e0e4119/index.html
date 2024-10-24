@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Copy Button</title>
+<link rel="icon" href="https://favicon.potherca.workers.dev/36" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+<!-- HTML Meta Tags -->
+<meta name="description" content="CSS + JS Copy Button">
+<!-- Facebook Meta Tags -->
+<meta property="og:url" content="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Copy Button">
+<meta property="og:description" content="CSS + JS Copy Button">
+<meta property="og:image" content="https://user-images.githubusercontent.com/195757/236698925-4969f801-61fb-4e16-81ae-0d8c8893a9d2.png">
+<!-- Twitter Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta property="twitter:domain" content="gist.pother.ca">
+<meta property="twitter:url" content="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb">
+<meta name="twitter:title" content="Copy Button">
+<meta name="twitter:description" content="CSS + JS Copy Button">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/195757/236698925-4969f801-61fb-4e16-81ae-0d8c8893a9d2.png">
+<!-- Meta Tags Generated via https://www.opengraph.xyz -->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">
+<link rel="stylesheet" href="https://pother.ca/CssBase/css/created-by-potherca.css">
+<link rel="stylesheet" href="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.css">
+<script async src="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.js"></script>
+
+<style>
+  article {
+    background-color: #fff;
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+  }
+
+  body {
+    background-color: #def;
+  }
+
+  pre {
+    display: block;
+    margin: 0.5em;
+    padding: 0.5em;
+    white-space: pre-wrap;
+  }
+
+  form {
+    text-align: center;
+  }
+
+  h1 {
+    width: 10em
+  }
+
+  .created-by {
+    padding: 0.5em;
+    text-align: center;
+    width: 100%;
+  }
+</style>
+
+<article class="flex two-third-500 off-sixth-500">
+  <header class="full">
+    <h1 data-js="copy" data-js-copy="pre[data-js='copy']">Copy Button</h1>
+  </header>
+  <main class="full">
+    <p>
+      This page contains the recipe to make a copy button.
+    </p>
+    <p>
+      It is activated by adding <code>data-js="copy"</code> to an element and including the CSS and JS files.
+    </p>
+    <p>
+      The button itself is an SVG that is added to an HTML element using
+      <a href="https://developer.mozilla.org/docs/Web/CSS/::after">an <code>::after</code> pseudo-element</a>.
+    </p>
+    <p>
+      The JS is an
+      <a href="https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener">EventListener</a> on a
+        <a href="https://developer.mozilla.org/docs/Web/API/Element/click_event">Click event</a>, and uses
+      <a href="https://developer.mozilla.org/docs/Web/API/Navigator/clipboard"><code>navigator.clipboard</code></a> to copy the text.
+    </p>
+    <p>
+      Once the text is copied, the button is given a CSS class that changes the SVG to a checkmark.
+    </p>
+    <p>
+      Both SVG icons are taken from <a href="https://cyberalien.github.io/line-md/">Material Line Icons</a>.
+    </p>
+    <p>
+      It can be seen in action below.
+    </p>
+
+    <pre data-js="copy">
+&lt;link rel="stylesheet" href="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.css"&gt;
+&lt;script async src="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.js"&gt;&lt;/script&gt;
+&lt;pre data-js="copy"&gt;Your Text Goes Here&lt;/pre&gt;
+</pre>
+    <p data-js="copy copy-html">
+      If the <em>HTML</em> of the target should be copied (rather than the text) use:
+      <code>data-js="copy copy-html"</code>.
+      This will also copy any
+      <a href="https://developer.mozilla.org/docs/Web/HTML"><abbr>HTML</abbr> tags</a> present in the content.
+    </p>
+    <p>
+      To have a button that copies something else, add <code>data-js-copy="selector"</code>, where
+      <code>selector</code> can be any valid
+      <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors">CSS selector.</a>
+    </p>
+    <p>For example: <a data-js="copy" data-js-copy="pre[data-js-copy='target']" title="Copy the text below"></a></p>
+    <pre data-js-copy="target">
+&lt;link rel="stylesheet" href="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.css"&gt;
+&lt;script async src="https://gist.pother.ca/33b4d10024f56ba0610f8e70477687cb/copy-button.js"&gt;&lt;/script&gt;
+&lt;a data-js=&quot;copy&quot; data-js-copy=&quot;pre[data-js-copy-this=&apos;target&apos;]&quot; title=&quot;Copy the text below&quot;&gt;&lt;/a&gt;
+&lt;pre data-js-copy-this="target"&gt;Your Text Goes Here&lt;/pre&gt;
+</pre>
+  </main>
+</article>
+
+<footer class="created-by">
+  <p>
+    Source of this page is
+    available on <a href="https://gist.github.com/Potherca/33b4d10024f56ba0610f8e70477687cb">Github</a>
+    under a <a rel="license" href="https://spdx.org/licenses/MPL-2.0.html"
+  >Mozilla Public License 2.0</a> &mdash; Created by <a href="https://pother.ca/" class="potherca">Potherca</a>
+  </p>
+</footer>
+</html>

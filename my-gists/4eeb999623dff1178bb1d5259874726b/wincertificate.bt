@@ -1,0 +1,32 @@
+//------------------------------------------------
+//--- 010 Editor v7.0 Binary Template
+//
+//      File: 
+//   Authors: Matt Graeber (@mattifestation)
+//   Version: 
+//   Purpose:  
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+typedef enum <ushort> WinCertRevision {
+  WIN_CERT_REVISION_1_0 = 0x0100,
+  WIN_CERT_REVISION_2_0 = 0x0200
+} WIN_CERT_REVISION;
+
+typedef enum <ushort> WinCertType {
+  WIN_CERT_TYPE_X509 = 1,
+  WIN_CERT_TYPE_PKCS_SIGNED_DATA = 2,
+  WIN_CERT_TYPE_RESERVED_1 = 3,
+  WIN_CERT_TYPE_TS_STACK_SIGNED = 4
+} WIN_CERT_TYPE;
+
+typedef struct WIN_CERTIFICATE {
+  ulong             dwLength <bgcolor=cLtRed>;
+  WIN_CERT_REVISION wRevision <bgcolor=cLtGreen>;
+  WIN_CERT_TYPE     wCertificateType <bgcolor=cLtBlue>;
+  BYTE              bCertificate[dwLength - 8] <bgcolor=cLtPurple>;
+};
+
+WIN_CERTIFICATE WinCertificate;

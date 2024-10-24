@@ -1,0 +1,204 @@
+#!/bin/bash
+
+launchMenu () {
+  if [ -n "$(ls -A data/usr 2>/dev/null)" ]; then
+    clear
+    echo "================ Portable Apps ================"
+    echo ""
+    echo "There are apps installed, what do you want to do:"
+    echo "[S] Start an app"
+    echo "[I] Install another app"
+    echo "[Q] Quit"
+    echo ""
+    echo "Choose an option:"
+    read -n 1 seloption
+    if [ $seloption = "S" ] || [ $seloption = "s" ]; then
+      clear
+      echo "================ Portable Apps ================"
+      echo ""
+      echo "Here are installed apps:"
+      if test -d ./data/usr/bin; then
+        for i in $(ls -d ./data/usr/bin/*); do echo ${i%%/} | cut -f5 -d'/'; done
+      fi
+      for i in $notpathapps; do
+        appname="$i"
+        if test -f ./data/$(getAppPath); then
+          echo "$appname"
+        fi
+      done
+      echo "Choose an app to start (leave blank to return to home):"
+      read appname
+      if ! [ $appname = "" ]; then
+        if test -f ./data/$(getAppPath); then
+          clear
+          echo "Launching $appname"
+          ./data/$(getAppPath)
+        fi
+      fi
+      launchMenu
+    elif [ $seloption = "I" ] || [ $seloption = "i" ]; then
+      clear
+      echo "================ Portable Apps ================"
+      echo ""
+      echo "There are apps installed, what do you want to do:"
+      echo "[I] Install from internet (download deb)"
+      echo "[D] Install from local deb"
+      echo "[L] Install from app library"
+      echo ""
+      echo "Choose an option:"
+      read -n 1 seloption
+      if [ $seloption = "I" ] || [ $seloption = "i" ]; then
+        clear
+        echo "Enter .deb file URL:"
+        read deburl
+        clear
+        echo "Downloading deb..."
+        wget $deburl -O ./data/tmp/install.deb
+        clear
+        echo "Extracting App..."
+        dpkg --extract ./data/tmp/install.deb ./data
+        rm ./data/tmp/install.deb
+        launchMenu
+      elif [ $seloption = "D" ] || [ $seloption = "d" ]; then
+        clear
+        echo "Drop .deb file in command prompt (or enter its path):"
+        read debpath
+        clear
+        echo "Extracting App..."
+        dpkg --extract $debpath ./data
+        launchMenu
+      elif [ $seloption = "L" ] || [ $seloption = "l" ]; then
+        clear
+        echo "================ Portable Apps ================"
+        echo ""
+        echo "Here are apps on the library:"
+        for i in $applist; do
+          echo "$i"
+        done
+        echo ""
+        echo "Choose an option:"
+        read appname
+        if [ "$appname" != "" ]; then
+          clear
+          echo "Downloading $appname..."
+          wget $(getAppUrl) -O ./data/tmp/install.deb
+          clear
+          echo "Extracting $appname..."
+          dpkg --extract ./data/tmp/install.deb ./data
+          rm ./data/tmp/install.deb
+        fi
+        launchMenu
+      else
+        launchMenu
+      fi
+    elif [ $seloption = "Q" ] || [ $seloption = "q" ]; then
+      rm -rf ./data/tmp
+      clear
+      echo "Bye bye !"
+    else
+      clear
+      launchMenu
+    fi
+  else
+    clear
+    echo "================ Portable Apps ================"
+    echo ""
+    echo "No apps are installed! What do you want to do:"
+    echo "[D] Install an app from deb"
+    echo "[I] Install an app from internet"
+    echo "[L] Install an app from library"
+    echo "[Q] Quit"
+    echo ""
+    echo "Choose an option:"
+    read -n 1 seloption
+    if [ $seloption = "I" ] || [ $seloption = "i" ]; then
+      clear
+      echo "Enter .deb file URL:"
+      read deburl
+      clear
+      echo "Downloading deb..."
+      wget $deburl -O ./data/tmp/install.deb
+      clear
+      echo "Extracting App..."
+      dpkg --extract ./data/tmp/install.deb ./data
+      rm ./data/tmp/install.deb
+      launchMenu
+    elif [ $seloption = "D" ] || [ $seloption = "d" ]; then
+      clear
+      echo "Drop .deb file in command prompt (or enter its path):"
+      read debpath
+      clear
+      echo "Extracting App..."
+      dpkg --extract $debpath ./data
+      launchMenu
+    elif [ $seloption = "L" ] || [ $seloption = "l" ]; then
+      clear
+      echo "================ Portable Apps ================"
+      echo ""
+      echo "Here are apps on the library:"
+      for i in $applist; do
+        echo "$i"
+      done
+      echo ""
+      echo "Choose an option:"
+      read appname
+      if [ "$appname" != "" ]; then
+        clear
+        echo "Downloading $appname..."
+        wget $(getAppUrl) -O ./data/tmp/install.deb
+        clear
+        echo "Extracting $appname..."
+        dpkg --extract ./data/tmp/install.deb ./data
+        rm ./data/tmp/install.deb
+      fi
+      launchMenu
+    elif [ $seloption = "Q" ] || [ $seloption = "q" ]; then
+      rm -rf ./data/tmp
+      clear
+      echo "Bye bye!"
+    else
+      clear
+      launchMenu
+    fi
+  fi
+}
+
+getAppPath () {
+  if [ "$appname" = "code" ]; then
+    echo "usr/share/code/code"
+  else
+    echo "usr/bin/$appname"
+  fi
+}
+
+getAppUrl () {
+  if [ "$appname" = "code" ]; then
+    echo "https://go.microsoft.com/fwlink/?LinkID=760868"
+  elif [ "$appname" = "discord" ]; then
+    echo "https://discord.com/api/download?platform=linux&format=deb"
+  elif [ "$appname" = "minecraft-launcher" ]; then
+    echo "https://launcher.mojang.com/download/Minecraft.deb"
+  elif [ "$appname" = "atom" ]; then
+    echo "https://atom.io/download/deb"
+  fi
+}
+
+if ! test -d ./data; then
+  mkdir data
+  mkdir data/home
+  mkdir data/tmp
+fi
+if ! test -d ./data/tmp; then
+  mkdir data/tmp
+fi
+if ! test -d ./data/home; then
+  mkdir data/home
+fi
+
+HOME=$(readlink -f "$0")
+HOME=$(dirname "$HOME")/data/home
+
+applist='code discord minecraft-launcher atom'
+notpathapps='code'
+
+launchMenu

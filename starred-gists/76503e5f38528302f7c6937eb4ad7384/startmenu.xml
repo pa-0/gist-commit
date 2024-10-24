@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<Settings component="StartMenu" version="4.3.1">
+	<MenuStyle value="Classic1"/>
+	<HideProgramsMetro value="1"/>
+	<PinnedPrograms value="PinnedItems"/>
+	<RecentPrograms value="None"/>
+	<RecentProgsTop value="1"/>
+	<EnableJumplists value="1"/>
+	<StartScreenShortcut value="0"/>
+	<SearchBox value="Normal"/>
+	<SearchPrograms value="1"/>
+	<SearchMetroApps value="0"/>
+	<SearchFiles value="0"/>
+	<SearchContents value="0"/>
+	<SearchInternet value="0"/>
+	<SkinC1 value="Metro"/>
+	<SkinVariationC1 value=""/>
+	<SkinOptionsC1>
+		<Line>CAPTION=0</Line>
+		<Line>USER_IMAGE=0</Line>
+		<Line>USER_NAME=0</Line>
+		<Line>CENTER_NAME=0</Line>
+		<Line>SMALL_ICONS=1</Line>
+		<Line>LARGE_FONT=0</Line>
+		<Line>ICON_FRAMES=1</Line>
+		<Line>OPAQUE=0</Line>
+	</SkinOptionsC1>
+	<SkipMetro value="1"/>
+	<MenuItems1>
+		<Line>Items=ProgramsMenu,SettingsMenu,SEPARATOR,CustomItem,SEPARATOR,LogOffItem,ShutdownBoxItem,SEPARATOR,SearchBoxItem</Line>
+		<Line>ProgramsMenu.Command=programs</Line>
+		<Line>ProgramsMenu.Label=$Menu.Programs</Line>
+		<Line>ProgramsMenu.Tip=$Menu.ProgramsTip</Line>
+		<Line>ProgramsMenu.Icon=shell32.dll,326</Line>
+		<Line>ProgramsMenu.Settings=TRACK_RECENT</Line>
+		<Line>SettingsMenu.Items=PCSettingsItem,ControlPanelItem</Line>
+		<Line>SettingsMenu.Command=settings</Line>
+		<Line>SettingsMenu.Label=$Menu.Settings</Line>
+		<Line>SettingsMenu.Icon=shell32.dll,330</Line>
+		<Line>PCSettingsItem.Command=pc_settings</Line>
+		<Line>PCSettingsItem.Label=$Menu.PCSettings</Line>
+		<Line>PCSettingsItem.Icon=%windir%\ImmersiveControlPanel\SystemSettings.exe,10</Line>
+		<Line>PCSettingsItem.Settings=TRACK_RECENT</Line>
+		<Line>ControlPanelItem.Command=control_panel</Line>
+		<Line>ControlPanelItem.Label=$Menu.ControlPanel</Line>
+		<Line>ControlPanelItem.Tip=$Menu.ControlPanelTip</Line>
+		<Line>ControlPanelItem.Icon=shell32.dll,137</Line>
+		<Line>ControlPanelItem.Settings=TRACK_RECENT</Line>
+		<Line>CustomItem.Command=powershell -Command "Start-Process PowerShell -Verb RunAs"</Line>
+		<Line>CustomItem.Label=Powershell (admin)</Line>
+		<Line>CustomItem.Icon=shell32.dll, 25</Line>
+		<Line>LogOffItem.Command=logoff</Line>
+		<Line>LogOffItem.Label=$Menu.Logoff</Line>
+		<Line>LogOffItem.Tip=$Menu.LogOffTip</Line>
+		<Line>LogOffItem.Icon=shell32.dll,325</Line>
+		<Line>ShutdownBoxItem.Command=shutdown_box</Line>
+		<Line>ShutdownBoxItem.Label=$Menu.ShutdownBox</Line>
+		<Line>ShutdownBoxItem.Icon=shell32.dll,329</Line>
+		<Line>ShutdownBoxItem.Settings=SPLIT</Line>
+		<Line>SearchBoxItem.Command=search_box</Line>
+		<Line>SearchBoxItem.Label=$Menu.SearchBox</Line>
+		<Line>SearchBoxItem.Icon=none</Line>
+		<Line>SearchBoxItem.Settings=OPEN_UP|TRACK_RECENT</Line>
+	</MenuItems1>
+</Settings>

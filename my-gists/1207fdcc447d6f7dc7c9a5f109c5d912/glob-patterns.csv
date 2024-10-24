@@ -1,0 +1,8 @@
+Pattern,	Description,	Example Pattern, Matches
+xyz, Match exactly xyz and nothing more, photo.db, photo.db 
+*,	Match any 0 or more characters,	*s.db, photos.db users.db ... (files with s.db suffix)
+?,	Matches any single character,	?ing.db,	king.db ping.db ring.db
+[...],	Matches one character listed inside the brackets, [pr]ing.txt,	ping.txt ring.txt
+[start-end],	Matches any character from the start till the end of a set. Supported patterns are a-z; A-Z and 0-9, [m-z]ing.*, ping.db ping.txt ring.db ring.txt
+[!...], Matches one character not included in the brackets, [!pr]ing.txt, king.txt
+[!start-end], Matches any character not included from the till the end of a set, [!m-z]ing.*, king.db king.txt

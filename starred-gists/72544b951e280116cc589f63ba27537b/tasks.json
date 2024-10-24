@@ -1,0 +1,217 @@
+{
+    // Based on: https://gist.github.com/pakLebah/dab98067e9a388a3a8d2f5c0b44a7d3f#file-tasks-json
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+            // task settings for files and folders, use full path for commands
+            "FPC_COMMAND": "fpc",
+            "PROJECTFILE": "${relativeFile}",
+            "PROJECTBASE": "${fileBasenameNoExtension}",
+            "OUTPUT": ".build",
+            "DEBUG": ".build/debug",
+            "RELEASE": ".build/release",
+            "DEPLOY": ".build/deploy",
+            "EXTENSION": "",
+            "PROCESSOR": "-Px86_64",
+            "SYNTAX": "-Mobjfpc"
+        }
+    },
+    "tasks": [
+        { //! Build debug without any optimization
+            "label": "fpc: Build Debug",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "${FPC_COMMAND}",
+            "args": [
+                "${PROJECTFILE}", // main project file
+                "${PROCESSOR}", // target processor
+                "${SYNTAX}", // pascal syntax mode
+                "-CroOti", // generated code setting
+                "-O-", // disable optimization
+                "-g", // debug info
+                "-B", // rebuild all units
+                "-v", // verbose message
+                "-gw", // dwarf debug setting
+                "-godwarfsets", // dwarf mode setting
+                "-FE${DEBUG}", // output for binary
+                "-FU${OUTPUT}" // output for units
+            ],
+            "presentation": {
+                "focus": true
+            },
+            "problemMatcher": {
+                "owner": "objectpascal",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    // capture FPC's error messages and display them in Problems panel
+                    "kind": "location",
+                    "regexp": "^(.*)\\((\\d.*),(\\d.*)\\) (Warning|Error|Fatal): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5,
+                    "loop": true
+                }
+            }
+        },
+        { //! Build release with full optimization
+            "label": "fpc: Build Release",
+            "type": "shell",
+            "group": "build",
+            "command": "${FPC_COMMAND}",
+            "args": [
+                "${PROJECTFILE}", // main project file
+                "${PROCESSOR}", // target processor
+                "${SYNTAX}", // pascal syntax mode
+                "-CX", // generated code setting
+                "-O3", // code optimization setting
+                "-XXs", // executable setting
+                "-B", // rebuild all units
+                "-v", // verbose message
+                "-FE${RELEASE}", // output for binary
+                "-FU${OUTPUT}" // output for units
+            ],
+            "presentation": {
+                "focus": true
+            },
+            "problemMatcher": {
+                "owner": "objectpascal",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "kind": "location",
+                    "regexp": "^(.*)\\((\\d.*),(\\d.*)\\) (Warning|Error|Fatal): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5,
+                    "loop": true
+                }
+            }
+        },
+        { //! Syntax check without linking
+            "label": "fpc: Syntax Check",
+            "type": "shell",
+            "group": "build",
+            "command": "${FPC_COMMAND}",
+            "args": [
+                "${PROJECTFILE}", // main project file
+                "${PROCESSOR}", // target processor
+                "${SYNTAX}", // pascal syntax mode
+                "-Se99", // maximum error found
+                "-B", // rebuild all units
+                "-v", // verbose message
+                "-s", // syntax check mode
+                "-FE${OUTPUT}", // output for binary
+                "-FU${OUTPUT}" // output for units
+            ],
+            "presentation": {
+                "focus": true
+            },
+            "problemMatcher": {
+                "owner": "objectpascal",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "kind": "location",
+                    "regexp": "^(.*)\\((\\d.*),(\\d.*)\\) (Warning|Error|Fatal): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5,
+                    "loop": true
+                }
+            }
+        },
+        { //! Run code using InstantFPC (quick compile)
+            "label": "fpc: Run Code",
+            "type": "shell",
+            "group": "test",
+            "command": "instantfpc",
+            "args": [
+                "${PROJECTFILE}", // main project file
+                "-B" // always build
+            ],
+            "presentation": {
+                "focus": true
+            },
+            "problemMatcher": {
+                "owner": "objectpascal",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "kind": "location",
+                    "regexp": "^(.*)\\((\\d.*),(\\d.*)\\) (Warning|Error|Fatal): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5,
+                    "loop": true
+                }
+            }
+        },
+        { //! Execute generated (debug) binary
+            "label": "fpc: Execute Binary",
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "command": "./${DEBUG}/${PROJECTBASE}",
+            "args": [],
+            "presentation": {
+                "focus": true
+            },
+            "problemMatcher": []
+        },
+        { //! Create build folders for compilation
+            "label": "fpc: Create Build Folders",
+            "type": "shell",
+            "command": "mkdir",
+            "args": [
+                "${OUTPUT}",
+                "${DEBUG}",
+                "${RELEASE}",
+                "${DEPLOY}"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        { //! Remove compiler genereted files
+            "label": "fpc: Remove Build Files",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf", // remove them all!
+                "${OUTPUT}/*.*", // unit files
+                "${DEBUG}/{,.[!.],..?}*", // debug files
+                "${RELEASE}/{,.[!.],..?}*", // release files
+                "~/.cache/instantfpc/${PROJECTBASE}", // ifpc binary
+                "~/.cache/instantfpc/${PROJECTBASE}.*" // ifpc source
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

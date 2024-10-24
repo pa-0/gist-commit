@@ -1,0 +1,79 @@
+USING VOID FOR UNDEFINED IN TS 
+==============================
+let mm = void ["sahil", 20]
+let nn = 32 as unknown as undefined
+
+
+USING GENERIC TYPES.TS
+======================
+type myDynamicType<T> = {
+    house: T
+}
+let h1: myDynamicType<number> = { house: 1 }
+let h2: myDynamicType<string | number> = { house: 2 }
+let h3: myDynamicType<boolean> = { house: true }
+
+
+DEFINE TWO TYPES USING &
+===========================
+type a = {
+    car: string
+}
+
+type b = {
+    bike: string
+}
+
+// & -> is used to merge two types
+type c = a & b
+const superVehicles: c = { car: "alto", bike: "yamaha" }
+
+
+PARTIAL
+======================
+partial makes every property optional
+type IContextProps = {
+  selectedChat: unknown;
+  setSelectedChat: unknown;
+  user: Partial<UserType>;
+  setUser: React.Dispatch<React.SetStateAction<Partial<UserType>>>;
+  notification: unknown;
+  setNotification: unknown;
+  chats: unknown;
+  setChats: unknown;
+};
+
+const ChatContext = createContext<Partial<IContextProps>>({});
+
+
+OMIT 
+=================
+
+Omit removes given properties from a object type.   in below example we remove `boat` type from `a`
+
+type a = {
+    toy: string,
+    airPlane: string
+    boat: string
+}
+
+
+const varun: Omit<a, "boat"> = { toy: "car", airPlane: "spice jet" }
+
+
+IF FUNCTION UNDEFINED IN TS
+======================================
+Cannot invoke an object which is possibly 'undefined'
+SOLUTION    
+
+// call function only if function is defined
+myFunction?.()
+
+
+TS ERROR FIXING
+======================================
+//TYPE 'NOTIFICATIONTYPE[] | UNDEFINED' MUST HAVE A '[SYMBOL.ITERATOR]()' METHOD THAT RETURNS AN ITERATOR.
+
+setNotification?.([newMessageRecieved, ...notification]);
+FIXED-
+setNotification?.([newMessageRecieved, ...(notification || [])]);

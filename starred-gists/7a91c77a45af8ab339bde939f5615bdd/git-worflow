@@ -1,0 +1,5 @@
+Git workflow:
+
+1. Always make sure when you are developing feature and fixing bugs you must do changes in `develop` branch.
+2. After this you can checkout main branch by vscode and then merge `develop` branch into that.
+3. After doing this you can sync your main branch on github via sync button on vscode.

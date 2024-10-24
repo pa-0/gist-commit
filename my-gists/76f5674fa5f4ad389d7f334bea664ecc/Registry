@@ -1,0 +1,34 @@
+# Disables WSL in Explorer Context Menu
+\HKEY_CLASSES_ROOT\Directory\background\shell\WSL
+	- [STRING] ProgrammaticAccessOnly
+
+# Disables WSL in Explorer Context Menu
+\HKEY_CLASSES_ROOT\Directory\shell\WSL
+	- [STRING] ProgrammaticAccessOnly
+
+# Double-Click to run PowerShell Scripts
+\HKEY_CLASSES_ROOT\Microsoft.PowerShellScript.1\Shell\Open\Command
+	- [DEFAULT] "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -File "%1"%*
+
+# Disable Terminal Beep
+\HKEY_CURRENT_USER\Control Panel\Sound
+	- Beep: no
+
+# Disable Search Suggestions (Recommend using Group Policy)
+\HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Explorer
+	- [DWORD] DisableSearchBoxSuggestions: 1
+
+# Disables Windows Terminal in Explorer Context Menu
+\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked
+	- [STRING] {9F156763-7844-4DC4-B2B1-901F640F5155}: WindowsTerminal
+
+# Disable Start Menu Internet Search (Recommend using Group Policy)
+\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search
+	- [DWORD] AllowCortana: 0
+	- [DWORD] DisableWebSearch: 1
+	- [DWORD] ConnectedSearchUseWeb: 0
+	- [DWORD] ConnectedSearchUseWebOverMeteredConnections: 0
+
+# Turn off smart multi-homed name resolution (Recommend using Group Policy)
+\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient
+	- [DWORD] DisableSmartNameResolution: 1

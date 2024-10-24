@@ -1,0 +1,143 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/arch"
+
+  config.vm.provider "hyperv" do |hv|
+    hv.cpus = 6
+    hv.maxmemory = 8192
+    hv.memory = 1024
+    hv.vmname = "Arch"
+    hv.vm_integration_services = {
+      guest_service_interface: true,
+      heartbeat: true,
+      key_value_pair_exchange: true,
+      shutdown: true,
+      time_synchronization: true,
+      vss: true,
+    }
+  end
+
+  config.ssh.username = "vagrant"
+  config.vm.provision "shell", args: "vagrant", inline: %(
+    set -xeuo pipefail
+    vm_user=$1
+
+    # Setup Pacman and upgrade
+    curl -SsL 'https://www.archlinux.org/mirrorlist/?country=BR&ip_version=4&use_mirror_status=on' | \
+      sed 's/^#Server/Server/' > \
+      /etc/pacman.d/mirrorlist
+    pacman -Syyu --noconfirm --needed base-devel
+
+    # Setup Yay
+    if ! hash yay; then
+      mkdir -p /tmp/yay-bin
+      chown $vm_user:$vm_user /tmp/yay-bin
+      curl -SsL https://aur.archlinux.org/cgit/aur.git/snapshot/yay-bin.tar.gz | tar xzf - -C /tmp/yay-bin --strip-components=1
+      cd /tmp/yay-bin
+      su $vm_user -c 'makepkg -f'
+      pacman -U --noconfirm yay-bin-*.tar.xz
+    fi
+
+    # Enable SystemD NetworkD, disable dhcpcd
+    mkdir -p /etc/systemd/network
+    cat <<EOF > /etc/systemd/network/eth0.network
+[Match]
+Name=eth0
+
+[Network]
+DHCP=ipv4
+EOF
+
+    cat <<EOF > /etc/systemd/network/eth1.network
+[Match]
+Name=eth1
+
+[Network]
+Address=10.100.100.10/24
+Gateway=10.100.100.1
+DNS=1.1.1.1
+DNS=8.8.8.8
+EOF
+
+    cat <<EOF > /etc/resolv.conf.head
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+EOF
+
+    sudo systemctl enable systemd-networkd
+    sudo systemctl disable dhcpcd
+
+    #   Rename user
+    if ! grep PasswordAuthentication /etc/ssh/sshd_config; then
+      echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
+    fi
+
+    sudo -u $vm_user -- yay -S --needed --noconfirm \
+      aspell-en \
+      aspell-pt \
+      autojump \
+      aws-cli \
+      bat \
+      cloc \
+      clustergit-git \
+      clustergit-git \
+      cmake \
+      docker-compose \
+      ebtables \
+      emacs \
+      fish \
+      fslint \
+      fzf \
+      git-lfs \
+      global \
+      go \
+      grml-zsh-config \
+      gvim \
+      imagemagick \
+      jdk-openjdk \
+      linux-headers \
+      moreutils \
+      neovim \
+      net-tools \
+      nodejs \
+      npm \
+      oath-toolkit \
+      openconnect \
+      packer \
+      postgresql-libs \
+      pygmentize \
+      python \
+      python-boto \
+      python-neovim \
+      python-pip \
+      python-psutil \
+      rclone \
+      ripgrep \
+      rmlint \
+      ruby \
+      s3cmd \
+      sbt \
+      scala \
+      shellcheck-bin \
+      sqlite \
+      sysdig \
+      sysstat \
+      terraform \
+      the_silver_searcher \
+      tig \
+      tigervnc \
+      tree \
+      ufw \
+      units \
+      unzip \
+      xclip \
+      yarn \
+      zsh-autosuggestions \
+      zsh-completions \
+      zsh-syntax-highlighting
+
+    usermod -aG docker $vm_user || 0
+  )
+end

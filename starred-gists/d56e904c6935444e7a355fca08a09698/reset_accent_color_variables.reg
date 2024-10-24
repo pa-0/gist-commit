@@ -1,0 +1,37 @@
+Windows Registry Editor Version 5.00
+
+; undo Pitch Black Theme preset
+; you can reapply your previous accent from the list of recent colors
+
+[-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Accent]
+
+[-HKEY_USERS\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Accent]
+
+[-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM]
+
+[-HKEY_USERS\.DEFAULT\SOFTWARE\Microsoft\Windows\DWM]
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\Dwm]
+
+[-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize]
+
+[-HKEY_USERS\.DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize]
+
+[-HKEY_CURRENT_USER\Control Panel\Colors]
+
+[-HKEY_USERS\.DEFAULT\Control Panel\Colors]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
+"Background"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System]
+"DisableAcrylicBackgroundOnLogon"=-
+"DisableLogonBackgroundImage"=-
+
+[HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Personalization]
+"PersonalColors_Background"=-
+"PersonalColors_Accent"=-
+"NoLockScreen"=-
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DWM]
+; done - log off and back on to see all changes 

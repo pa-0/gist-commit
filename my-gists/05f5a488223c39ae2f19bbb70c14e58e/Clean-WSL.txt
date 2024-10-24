@@ -1,0 +1,10 @@
+// Run powershell as admin
+Go inside "wsl2" cmd
+install ncdu : sudo apt-get install ncdu  
+run : sudo ncdu --exclude mnt     //--exclude mnt Ignore windows drive like - c: d: etc... 
+
+wsl --shudown 
+Optimize-VHD -Path  %userprofile%\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc\LocalState\ext4.vhdx  -Mode Full
+Optimize-VHD -Path %userprofile%\AppData\Local\Docker\wsl\data\ext4.vhdx -Mode Full
+
+// Use Windirstat like program to find .vhdx  file , generally those are large in size 

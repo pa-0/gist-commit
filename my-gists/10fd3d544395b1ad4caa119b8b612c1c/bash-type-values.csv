@@ -1,0 +1,7 @@
+Command, Output, Description
+type -t type, builtin, `type` is a command provided by the shell itself (shell built-in)
+type -t nano, file, `nano` is a binary file executable as command (located at `/usr/bin/nano`)
+type ls, ls is hashed (/bin/ls), `ls` is a binary file but hashed (https://unix.stackexchange.com/a/105878)
+type -t ll, alias, A shell alias (to `ls -al`)
+type -t case, keyword, `case` is a keyword in shell programming language
+type -t my_fake_ip, function, `my_fake_ip` is a function defined in the current terminal session

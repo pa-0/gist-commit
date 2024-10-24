@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="app_three"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="app_three">
+				<Option output="D:/source/app_three/cmake-build-debug/app_three.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/source/app_three/."/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/backward"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include-fixed"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 app_three"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="app_three/fast">
+				<Option output="D:/source/app_three/cmake-build-debug/app_three.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/source/app_three/."/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/backward"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include-fixed"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 app_three/fast"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ctl_one.c">
+				<Option output="D:/source/app_three/cmake-build-debug/ctl_one.c.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/source/app_three/."/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/backward"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include-fixed"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 ctl_one.c"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ctl_one.c/fast">
+				<Option output="D:/source/app_three/cmake-build-debug/ctl_one.c.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/source/app_three/."/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include/c++/13.2.0/backward"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../include"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/include-fixed"/>
+					<Add directory="C:/stuff/libs/C/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 ctl_one.c/fast"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/source/app_three/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/stuff/libs/C/mingw64/bin/mingw32-make.exe -f &quot;D:/source/app_three/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/source/app_three/app_three.c">
+			<Option target="app_three"/>
+		</Unit>
+		<Unit filename="D:/source/app_three/app_three.rc">
+			<Option target="app_three"/>
+		</Unit>
+		<Unit filename="D:/source/app_three/ctl_one.c">
+			<Option target="ctl_one.c"/>
+		</Unit>
+		<Unit filename="D:/source/app_three/ctl_one.rc">
+			<Option target="app_three"/>
+		</Unit>
+		<Unit filename="D:/source/app_three/resource.h">
+			<Option target="app_three"/>
+		</Unit>
+		<Unit filename="D:/source/app_three/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

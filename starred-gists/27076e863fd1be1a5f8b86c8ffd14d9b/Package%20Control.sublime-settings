@@ -1,0 +1,35 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"Auto Close HTML Tags",
+		"AutoHotkey",
+		"BracketHighlighter",
+		"Color Scheme - Pastels UI",
+		"Duplicate Lines",
+		"Ecmascript Syntax",
+		"Emmet",
+		"Focus File on Sidebar",
+		"GlassIt",
+		"HTML-CSS-JS Prettify",
+		"JavaScript Enhancements",
+		"Laravel Blade AutoComplete",
+		"Laravel Blade Highlighter",
+		"Laravel Lang",
+		"Package Control",
+		"PackageResourceViewer",
+		"PHP Codebeautifier",
+		"Phpactor",
+		"PHPIntel",
+		"Python Debugger",
+		"Sass",
+		"SassBeautify",
+		"SublimeLinter",
+		"SublimeLinter-contrib-ember-template",
+		"SublimeLinter-phpcs",
+		"Sync Settings",
+	],
+}

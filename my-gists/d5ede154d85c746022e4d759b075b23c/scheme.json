@@ -1,0 +1,21 @@
+{
+  "background": "#000807",
+  "black": "#65737e",
+  "blue": "#00a2ff",
+  "brightBlack": "#eeffff",
+  "brightBlue": "#2088ff",
+  "brightCyan": "#89ddff",
+  "brightGreen": "#00ff9c",
+  "brightPurple": "#b700ff",
+  "brightRed": "#ff0059",
+  "brightWhite": "#eeffff",
+  "brightYellow": "#fffc58",
+  "cyan": "#00c3ff",
+  "foreground": "#ff3270",
+  "green": "#9dff00",
+  "name": "Cyberpunk SCARLET",
+  "purple": "#a200ff",
+  "red": "#ff0000",
+  "white": "#ffffff",
+  "yellow": "#ffff00"
+}

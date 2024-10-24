@@ -1,0 +1,11 @@
+--- WinSCPPortableU.nsi	2014-02-07 13:03:04.000000000 +0000
++++ WinSCPPortableU-2.nsi	2015-03-30 11:39:01.944041300 +0100
+@@ -145,7 +145,7 @@
+ 		StrCpy $0 `$PROGRAMDIRECTORY\PuTTYPortableLinker.exe`
+ 		;${StrReplace} $1 "\" "%5C" $0
+ 		${WordReplace} $0 "\" "%5C" "+" $1
+-		WriteINIStr "$SETTINGSDIRECTORY\winscp.ini" "Configuration\Interface" "PuttyPath" "$1"
++		;WriteINIStr "$SETTINGSDIRECTORY\winscp.ini" "Configuration\Interface" "PuttyPath" "$1"
+ 		
+ 	;GetCurrentLanguage
+ 		ReadINIStr $0 "$SETTINGSDIRECTORY\winscp.ini" "Configuration\Interface" "LocaleSafe"

@@ -1,0 +1,30 @@
+# Aliases allow you to create nicknames for gh commands
+aliases:
+    co: pr checkout
+
+    # The following aliases require https://github.com/cli/cli/pull/3519
+    issues: |-
+        issue list --json number,title,labels,updatedAt --template '{{range .}}{{if .labels}}{{row (printf "#%v" .number | autocolor "green") .title (pluck "name" .labels | join ", " | printf "(%s)" | autocolor "gray+h") (timeago .updatedAt | printf "about %s" | autocolor "gray+h")}}{{else}}{{row (printf "#%v" .number | autocolor "green") .title "" (timeago .updatedAt | printf "about %s" | autocolor "gray+h")}}{{end}}{{end}}'
+    users: |-
+        api graphql --paginate
+        --template '{{range .data.repository.assignableUsers.nodes}}{{if .status}}{{row (autocolor "green" .login) .name (autocolor "gray+h" .email) (autocolor "yellow" .status.message)}}{{else}}{{row (autocolor "green" .login) .name (autocolor "gray+h" .email) ""}}{{end}}{{end}}'
+        -F owner=':owner' -F repo=':repo' -F name='$1' -f query='
+        query ($repo: String!, $owner: String!, $name: String!, $endCursor: String) {
+          repository(name: $repo, owner: $owner) {
+            assignableUsers(first: 100, after: $endCursor, query: $name) {
+              nodes {
+                login
+                name
+                email
+                status {
+                  message
+                }
+              },
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+        '

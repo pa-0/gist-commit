@@ -1,0 +1,22 @@
+--- a/Crypt.ahk
++++ b/Crypt.ahk
+@@ -367,0 +368 @@
++			phHash := pbSecret := cbSecret := 0
+@@ -419,0 +421 @@
++			cbOutput := pbIV := cbIV := 0, Encoding := "UTF-8"
+@@ -462,0 +465 @@
++			cbOutput := pbIV := cbIV := 0, Encoding := "UTF-8"
+@@ -565 +568 @@
+-			                                                        , "ptr*", phKey
++			                                                        , "ptr*", phKey := 0
+@@ -579,0 +583 @@
++			pcbResult := pbOutput := 0
+@@ -608 +612 @@
+-			NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "ptr*", phAlgorithm
++			NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "ptr*", phAlgorithm := 0
+@@ -648 +652 @@
+-			                                         , "uint*", pcchString))
++			                                         , "uint*", pcchString := 0))
+@@ -672 +676 @@
+-			                                         , "uint*", pcbBinary
++			                                         , "uint*", pcbBinary := 0

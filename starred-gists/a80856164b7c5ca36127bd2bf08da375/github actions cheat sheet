@@ -1,0 +1,102 @@
+============================================================================  
+#how to delete a workflow from GitHub Actions?
+https://stackoverflow.com/questions/57927115/anyone-know-a-way-to-delete-a-workflow-from-github-actions
+============================================================================ 
+gists
+============================================================================ 
+https://api.github.com/users/githubfoam/gists
+
+`html_url` list gists
+============================================================================  
+user:githubfoam
+extension:yml #gists with a .yml extension
+language:html #gists with HTML files
+filename:.bash_profile #gists with HTML files
+stars:>78 #gists with greater than 78 stars
+anon:true #anonymous gists
+fork:only #forked gists
+topic:pentest
+jquery in:name #matches repositories with "jquery" in the repository name
+jquery in:name,description #matches repositories with "jquery" in the repository name or description
+jquery in:readme #matches repositories mentioning "jquery" in the repository's README file
+============================================================================  
+https://docs.github.com/en/github/searching-for-information-on-github/searching-for-repositories#search-by-when-a-repository-was-created-or-last-updated
+============================================================================ 
+#environment variables
+# https://docs.github.com/en/actions/learn-github-actions/environment-variables
+
+  ubuntu-latest-conda-job:
+    name: "ubuntu-latest"
+    runs-on: ubuntu-latest
+    env:
+      DATE_INFO: $(date '+%Y%m%d')
+      REPO_NAME: "threathunt"
+      IMAGE_NAME: "jpnb"
+      
+============================================================================ 
+#workflow
+
+  # If on master branch, build and release image.
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image.
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:latest
+============================================================================ 
+#the job runs even when cancelled
+
+steps:
+- name: Build App
+  run: ./build.sh
+
+- name: Archive Test Results
+  if: success() || failure()
+  uses: actions/upload-artifact@v1
+  with:
+    name: test-results
+    path: app/build
+============================================================================             
+#https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions
+# run even if a previous step fails
+
+steps:
+- name: Build App
+  run: ./build.sh
+
+- name: Archive Test Results
+  if: always()
+  uses: actions/upload-artifact@v1
+  with:
+    name: test-results
+    path: app/build
+
+============================================================================             

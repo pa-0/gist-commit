@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Description:
+#   from the current working folder search recursively for local git repos and run 'git pull-all' on them. All arguments to 'git pull-recursive' are passed to 'git pull-all'
+#   Basically a convenience shortcut for 'git recursive pull-all'
+#
+# Usage:
+#   git pull-recursive [args...]
+
+  for f in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'); do
+    #print $f
+    if [[ -d "$f" && ! -L "$f" ]]; then
+      dir=$f
+      echo "./$dir"
+    fi
+  done

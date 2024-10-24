@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://gist.github.com/c79e660c2456b1cc0172e8ebcc7962d0.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "masterdebator"]
+	remote = origin
+	merge = refs/heads/masterdebator

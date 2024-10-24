@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://gist.github.com/9a7ab9a17644709a7a3e76db280979f3.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "daddy"]
+	remote = origin
+	merge = refs/heads/daddy

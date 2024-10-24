@@ -1,0 +1,38 @@
+=================================================================
+## Deployment @ Render
+
+- Root Directory: `backend`
+
+- Build command:
+
+```
+npm i && npm run build && cd ../frontend && npm i && npm run build && cp -r dist ../backend/react-static
+
+copy start command from backend mern chat app -  "start" : "node ./dist/server.js",
+
+Render website connect to github
+
+select backend as root folder in render control panel
+
+copy from app.ts mern chat app
+if (process.env.NODE_ENV === 'production' && process.env.VITE !== 'false') {
+  const reactBuildPath = path.join('./react-static');
+  const staticMiddleware = express.static(reactBuildPath);
+  app.use(staticMiddleware);
+  app.use('*', staticMiddleware);
+
+  const assetsPath = path.join('./react-static/assets');
+  app.use('/assets', express.static(assetsPath));
+}
+
+========================================
+give env variable in render control panel for the website in settings 
+MONGO_URI=@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+JWT_SECRET=
+
+-------------------version error---------------------
+use in package.json file 
+
+"engines": {
+    "node": ">=16.0.0"
+  },

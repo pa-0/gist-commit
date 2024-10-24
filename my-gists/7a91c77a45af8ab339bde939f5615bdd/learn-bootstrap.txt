@@ -1,0 +1,52 @@
+ grid-
+ <div>
+      {/* Total columns are always 12, by default each column has equal widths */}
+      <h1>GridExample 1</h1>
+      <div className='row'>
+        <div className='col bg-primary'>col1</div>
+        <div className='col bg-secondary'>col2</div>
+      </div>
+      
+button-
+<button type='submit' className='btn btn-outline-primary'>
+
+p-1,p-2 ... p-5= padding
+m-1,m-2 ... m-5= margin
+
+ps-1,ps-1 ... ps-5= padding start (padding left)
+pe-1, pe-2 ...pe-5= padding end (padding right)
+pt-1, pt-2 ... pt-5= padding top
+pb-1,pb-2 ... pb-5= padding bottom 
+
+ms-1,ms-2 ...ms-5= marging start (margin left)
+me-1, me-2 ... me-5= margin end (margin right)
+mt-1, mt-2 ... mt-5= margin top
+mb-1,mb-2 ... mb-5= margin bottom 
+
+border border-3 = use border before border-n
+
+Breakpoint	      Class infix	Dimensions
+Extra small	       None	<576px
+Small	              sm	≥576px
+Medium	            md	≥768px
+Large	              lg	≥992px
+Extra large	        xl	≥1200px
+Extra extra large	  xxl	≥1400px
+
+==========================================================
+
+Flexbox Zombie= https://mastery.games/flexboxzombies/chapter/2/level/11
+
+{
+  display:flex
+  flex-direction:row (default,towards right ) 
+  flex-direction:row-reverse ( towards left )
+  flex-direction: column (towards down)
+  flex-direction:column-reverse (towards top)
+}
+
+justify-content:flex-start (default)
+justify-content:flex-end (set all items in the end direction)
+justify-content:center (to center)
+justify-content:space-between (to give space between them)
+justify-content:space-around (to make space between them and on the edges )

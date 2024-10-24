@@ -1,0 +1,33 @@
+#!/bin/sh
+
+: ${XDG_DATA_HOME:=$HOME/.local/share}
+PANDOC_WRITER=${XDG_DATA_HOME}/pandoc-terminal-writer/terminal.lua
+
+case "$1" in
+*.html)
+  elinks -dump "$1"
+  ;;
+*.dj)
+  djot "$1" -t pandoc |
+    if test -f $PANDOC_WRITER
+    then
+      pandoc -f json -t $PANDOC_WRITER 2>&1
+    else
+      pandoc -f json -t html | elinks -dump -stdin
+    fi
+  ;;
+*.md|*.pmd|*.rst)
+  if test -f $PANDOC_WRITER
+  then
+    pandoc "$1" -t $PANDOC_WRITER 2>&1
+  else
+    pandoc "$1" -t html | elinks -dump -stdin
+  fi
+  ;;
+*.adoc)
+  asciidoc -o - "$1" | elinks -dump -stdin
+  ;;
+*)
+  exit 1
+  ;;
+esac

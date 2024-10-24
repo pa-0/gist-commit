@@ -1,0 +1,74 @@
+[
+	{"id": "side-bar-files-open-with",
+		"children":
+		[
+
+			//Gimp
+			{
+				"caption": "Gimp",
+				"id": "side-bar-files-open-with-gimp",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": ["C:\\Users\\geford\\Dropbox\\PortableApps\\GIMPPortable"],
+									"application": "C:\\Users\\geford\\Dropbox\\PortableApps\\GIMPPortable\\GIMPPortable.exe", // Windows
+									"extensions":"psd|png|jpg|jpeg",  //any file with these extensions
+									"args":[]
+								},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+
+			//separator
+			{"caption":"-"},
+
+			//Firefox
+			{
+				"caption": "Firefox",
+				"id": "side-bar-files-open-with-firefox",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": ["C:\\Users\\geford\\Dropbox\\PortableApps\\FirefoxPortable"],
+									"application": "C:\\Users\\geford\\Dropbox\\PortableApps\\FirefoxPortable\\FirefoxPortable.exe", // Windows
+									"extensions":"", //open all even folders
+									"args":[]
+								},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+			//Chrome
+			{
+				"caption": "Chrome",
+				"id": "side-bar-files-open-with-chrome",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": ["C:\\Users\\geford\\Dropbox\\PortableApps\\GoogleChromePortable"],
+									"application": "C:\\Users\\geford\\Dropbox\\PortableApps\\GoogleChromePortable\\GoogleChromePortable.exe",
+									"extensions":".*", //any file with extension
+									"args":[]
+						},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+
+			//separator
+			{"caption":"-"},
+
+			//Database Browser
+			{
+				"caption": "DB Browser for SQLite Portable",
+				"id": "side-bar-files-open-with-sql-browser",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": ["C:\\Users\\geford\\Dropbox\\PortableApps\\GoogleChromePortable"],
+									"application": "C:\\Users\\geford\\Dropbox\\PortableApps\\SQLiteDatabaseBrowserPortable\\SQLiteDatabaseBrowserPortable.exe",
+									"extensions":".db", //any file with extension
+									"args":[]
+						},
+				"open_automatically" : true // will close the view/tab and launch the application
+			},
+
+			{"caption":"-"}
+		]
+	}
+]

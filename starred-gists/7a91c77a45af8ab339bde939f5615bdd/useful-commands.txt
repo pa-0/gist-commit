@@ -1,0 +1,5 @@
+npm create vite@latest my-first-app
+cd commands
+cd - =go back previous folder
+cd .. =go to parent folder 
+cd =go to home directory

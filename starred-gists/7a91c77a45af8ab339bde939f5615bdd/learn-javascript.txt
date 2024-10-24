@@ -1,0 +1,46 @@
+let a // default value is undefined
+Number(a)
+NaN
+
+let b="23"
+Number(b)
+23 //string converted to number
+
+console.log('keys of state?', Object.keys(state));
+
+//we cant prevent from render while we change state 
+react.new at browser 
+code example=>
+import "./styles.css";
+import { useState } from "react";
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  let increament = () => setCount(count + 1);
+  return (
+    <div className="App">
+      {Math.random()}
+      <button onClick={increament}>click here</button>
+    </div>
+  );
+}
+
+
+-developers tool
+
+
+```js
+//Convert a date(including mongoDb date) Tip-we can convert any date(including mongoDb date) to indian time zone by adding 5.5hour (5hour 30 mins)
+new Date("2023-11-24T13:40:18.365+00:00")
+// OUTPUT: Fri Nov 24 2023 19:10:18 GMT+0530 (India Standard Time) 
+
+let k = new Date();
+k;
+// OUTPUT: Wed Dec 06 2023 03:37:31 GMT+0530 (India Standard Time)
+
+k.toJSON();
+// OUTPUT: '2023-12-05T22:07:31.235Z'
+
+k.toISOString();
+// OUTPUT: '2023-12-05T22:07:31.235Z'
+```

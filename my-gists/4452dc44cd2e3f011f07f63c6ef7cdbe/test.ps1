@@ -1,0 +1,11 @@
+$a.neighbors = $b, $c
+$b.neighbors = $d, $e
+$c.neighbors = $f
+$e.neighbors = $g, $h, $i
+$f.neighbors = $j, $k
+$g.neighbors = $l, $m
+$h.neighbors = $n
+$j.neighbors = $o
+$l.neighbors = $p
+$m.neighbors = $q, $r, $s, $t
+$n.neighbors = $u, $v

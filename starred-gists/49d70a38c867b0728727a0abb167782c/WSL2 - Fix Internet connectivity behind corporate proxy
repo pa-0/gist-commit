@@ -1,0 +1,53 @@
+Assuming you have followed all the steps to install / setup WSL2 -> https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+**Tested on Ubuntu 20.04**
+
+Step 1 - Find out default gateway and DNS servers
+- Navigate to `Control Panel\Network and Internet\Network Connections`
+- Right click on relevant connection type WiFi or Ethernet and select `Status`
+- Status screen will be displayed, click on `Details` button
+- Network Connection details screen will be displayed
+- Note down `IPv4 default gateway` and `IPv4 DNS Servers` if available
+
+                       **OR**
+- Run following command from powershell or cmd
+  `ipconfig /all`
+- Note down `Default Gateway` and `DNS Servers` for relevant connection type WiFi or Ethernet
+
+Step 2 - Create `wsl.conf` file
+- Login to WSL2 and create sudo vi `/etc/wsl.conf` with following content
+``
+[network]
+generateResolvConf = false
+
+``
+- Save file.
+
+Step 3 - Delete current `resolv.conf` file
+`sudo rm /etc/resolv.conf`
+
+Step 4 - Create new custom `resolv.conf` file
+- Use below command to create new file
+`sudo vi /etc/resolv.conf`
+- enter default gateway and any `IPv4 DNS servers` like below example
+
+``
+nameserver 192.168.1.254
+nameserver 192.165.1.251
+
+``
+- Save file
+
+Step 5 - Restart WSL2
+- Open powershell and run following command
+`wsl --shutdown`
+
+Step 6 - Test internet connection in WSL2 
+- ping google.com, it should work now.
+
+
+
+
+
+
+

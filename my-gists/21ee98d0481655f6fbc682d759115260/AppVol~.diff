@@ -1,0 +1,74 @@
+﻿--- Volume.ahk
++++ Volume1.ahk
+@@ -1 +1 @@
+-#Requires AutoHotkey v2.0
++#Requires AutoHotkey v1.1
+@@ -7 +7 @@
+-    } else if (SubStr(Target, -4) = ".exe") {
++    } else if (SubStr(Target, -3) = ".exe") {
+@@ -10,6 +10,6 @@
+-    try {
+-        hw := DetectHiddenWindows(true)
+-        appName := WinGetProcessName(Target)
+-        DetectHiddenWindows(hw)
+-    } catch {
+-        throw TargetError("Target not found.", -1, Target)
++    hw := A_DetectHiddenWindows
++    DetectHiddenWindows On
++    WinGet appName, ProcessName, % Target
++    DetectHiddenWindows % hw
++    if (appName = "") {
++        throw Exception("Target not found.", -1, Target)
+@@ -17,6 +17,6 @@
+-    GUID := Buffer(16)
+-    DllCall("ole32\CLSIDFromString", "Str", "{77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F}", "Ptr", GUID)
+-    IMMDeviceEnumerator := ComObject("{BCDE0395-E52F-467C-8E3D-C4579291692E}", "{A95664D2-9614-4F35-A746-DE8DB63617E6}")
+-    ComCall(4, IMMDeviceEnumerator, "UInt", 0, "UInt", 1, "Ptr*", &IMMDevice := 0)
+-    ObjRelease(IMMDeviceEnumerator.Ptr)
+-    ComCall(3, IMMDevice, "Ptr", GUID, "UInt", 23, "Ptr", 0, "Ptr*", &IAudioSessionManager2 := 0)
++    VarSetCapacity(GUID, 16, 0)
++    DllCall("ole32\CLSIDFromString", "Str", "{77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F}", "Ptr", &GUID)
++    IMMDeviceEnumerator := ComObjCreate("{BCDE0395-E52F-467C-8E3D-C4579291692E}", "{A95664D2-9614-4F35-A746-DE8DB63617E6}")
++    DllCall(NumGet(NumGet(IMMDeviceEnumerator + 0) + 4 * A_PtrSize), "Ptr", IMMDeviceEnumerator, "UInt", 0, "UInt", 1, "Ptr*", IMMDevice := 0)
++    ObjRelease(IMMDeviceEnumerator)
++    DllCall(NumGet(NumGet(IMMDevice + 0) + 3 * A_PtrSize), "Ptr", IMMDevice, "Ptr", &GUID, "UInt", 23, "Ptr", 0, "Ptr*", IAudioSessionManager2 := 0)
+@@ -24 +24 @@
+-    ComCall(5, IAudioSessionManager2, "Ptr*", &IAudioSessionEnumerator := 0) || DllCall("SetLastError", "UInt", 0)
++    DllCall(NumGet(NumGet(IAudioSessionManager2 + 0) + 5 * A_PtrSize), "Ptr", IAudioSessionManager2, "Ptr*", IAudioSessionEnumerator := 0) || DllCall("SetLastError", "UInt", 0)
+@@ -26,3 +26,3 @@
+-    ComCall(3, IAudioSessionEnumerator, "UInt*", &cSessions := 0)
+-    loop cSessions {
+-        ComCall(4, IAudioSessionEnumerator, "Int", A_Index - 1, "Ptr*", &IAudioSessionControl := 0)
++    DllCall(NumGet(NumGet(IAudioSessionEnumerator + 0) + 3 * A_PtrSize), "Ptr", IAudioSessionEnumerator, "UInt*", cSessions := 0)
++    loop % cSessions {
++        DllCall(NumGet(NumGet(IAudioSessionEnumerator + 0) + 4 * A_PtrSize), "Ptr", IAudioSessionEnumerator, "Int", A_Index - 1, "Ptr*", IAudioSessionControl := 0)
+@@ -31 +31 @@
+-        ComCall(14, IAudioSessionControl2, "UInt*", &pid := 0)
++        DllCall(NumGet(NumGet(IAudioSessionControl2 + 0) + 14 * A_PtrSize), "Ptr", IAudioSessionControl2, "UInt*", pid := 0)
+@@ -36 +36 @@
+-        ComCall(6, ISimpleAudioVolume, "Int*", &isMuted := 0)
++        DllCall(NumGet(NumGet(ISimpleAudioVolume + 0) + 6 * A_PtrSize), "Ptr", ISimpleAudioVolume, "Int*", isMuted := 0)
+@@ -38 +38 @@
+-            ComCall(5, ISimpleAudioVolume, "Int", !isMuted, "Ptr", 0)
++            DllCall(NumGet(NumGet(ISimpleAudioVolume + 0) + 5 * A_PtrSize), "Ptr", ISimpleAudioVolume, "Int", !isMuted, "Ptr", 0)
+@@ -41 +41 @@
+-            ComCall(4, ISimpleAudioVolume, "Float*", &levelOld := 0)
++            DllCall(NumGet(NumGet(ISimpleAudioVolume + 0) + 4 * A_PtrSize), "Ptr", ISimpleAudioVolume, "Float*", levelOld := 0)
+@@ -48 +48 @@
+-                ComCall(3, ISimpleAudioVolume, "Float", levelNew, "Ptr", 0)
++                DllCall(NumGet(NumGet(ISimpleAudioVolume + 0) + 3 * A_PtrSize), "Ptr", ISimpleAudioVolume, "Float", levelNew, "Ptr", 0)
+@@ -51 +51 @@
+-        ObjRelease(ISimpleAudioVolume.Ptr)
++        ObjRelease(ISimpleAudioVolume)
+@@ -53,0 +54,11 @@
++
++ProcessGetName(Pid) {
++    sz := VarSetCapacity(name, 1024, 0)
++    hProc := DllCall("OpenProcess", "UInt", 0x0410, "Int", false, "UInt", Pid, "Ptr")
++    if (hProc != 0) {
++        DllCall("psapi\GetModuleBaseName", "Ptr", hProc, "Ptr", 0, "Str", name, "UInt", sz)
++        DllCall("CloseHandle", "Ptr", hProc)
++    }
++    VarSetCapacity(name, -1)
++    return name
++}

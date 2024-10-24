@@ -1,0 +1,5 @@
+df = pd.DataFrame(list(zip([None if x == None else x.string for x in soup.find_all('h3')],
+                           [None if x.find(attrs={'class':'price_color'}) == None else x.find(attrs={'class':'price_color'}).string.replace('£','') for x in soup.find_all(attrs={'class':'col-xs-6 col-sm-4 col-md-3 col-lg-3'})],
+                           [None if x.find(attrs={'class':'instock availability'}).text == None else x.find(attrs={'class':'instock availability'}).text.strip() for x in soup.find_all(attrs={'class':'col-xs-6 col-sm-4 col-md-3 col-lg-3'})],
+                           [None if x.find(attrs={'class':re.compile(r'star-rating$')}).get('class') == None else x.find(attrs={'class':re.compile(r'star-rating$')}).get('class')[1] for x in soup.find_all(attrs={'class':'col-xs-6 col-sm-4 col-md-3 col-lg-3'})])),
+                  columns=['product_name','price','availability','rating'])

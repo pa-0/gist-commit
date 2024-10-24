@@ -1,0 +1,16 @@
+[user]
+	name = Heath Stewart
+	email = heaths@outlook.com
+  
+	# On yubikey from within gpg --edit-card, run fetch to set up keys.
+	signingkey = E7728FAA
+
+[alias]
+        sync = !git pull -p --ff-only upstream ${1:-main} && git push origin ${1:-main} && git fetch -p origin
+
+[gpg]
+	# To support above signingkey from yubikey, need to reference newer gpg.
+	program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
+
+[init]
+	defaultBranch = main

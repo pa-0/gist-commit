@@ -1,0 +1,15 @@
+#How to remove your SSH public/private keys, recreate them, and then add your newly created public key to the servers and online services you use.
+
+#Remove your SSH public/private keys:
+rm ~/.ssh/id_rsa*
+
+#Recreate the keypair, choosing a new passphrase:
+ssh-keygen -t rsa -f ~/.ssh/id_rsa
+
+#Add the newly created private key to your OS X Keychain to store the passphrase and manage unlocking it automatically:
+ssh-add -K ~/.ssh/id_rsa
+
+#Copy the public key to the OS X clipboard for adding to web services like GitHub, etc.
+cat ~/.ssh/id_rsa.pub | pbcopy
+
+#Add your newly created public key to the ~/.ssh/authorized_keys file of the remote server. Be sure to ensure the correct permissions of both the remote ~/.ssh folder (700) and ~/.ssh/authorized_keys (600). You may want to investigate using ssh-copy-id to ease this process.

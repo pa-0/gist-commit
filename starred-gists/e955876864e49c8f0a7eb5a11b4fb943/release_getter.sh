@@ -1,0 +1,3 @@
+gh release view --repo $REPO $tag --json assets | jq '[.[]|.[]|.name ]' |\
+ jq -r 'group_by((if contains("linux") then "linux" elif contains("osx") then "osx" elif contains("windows") then "windows" else null end),
+ (if contains("arm64") then "arm64" elif contains("x86_64") then "x86_64" elif contains("-x86.") then "x86" else null end)) | map({platform: .[0]|(if contains("linux") then "linux" elif contains("osx") or contains("darwin") or contains("apple") then "macos" elif contains("windows") then "windows" else null end), arch: .[0]|(if contains("arm64") then "arm64" elif contains("x86_64") then "x86_64" elif contains("-x86.") then "x86" else null end), names: map({name: .})})';

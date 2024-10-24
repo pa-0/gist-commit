@@ -1,0 +1,30 @@
+[
+	{ "keys": ["shift+alt+right"], "command": "indent"},
+	{ "keys": ["shift+alt+left"], "command": "unindent"},
+	// { "keys": ["ctrl+d"], "command": "duplicate_line", "args": { "block": true }},
+	{ "keys": ["ctrl+keypad_divide"], "command": "toggle_comment", "args": { "block": false } },
+	{ "keys": ["ctrl+e"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete Line.sublime-macro"} },
+
+
+
+	   { "keys": ["ctrl+c"], "command": "run_macro_file",
+        "args": {"file": "res://Packages/User/copy_line_wo_trailing_return.sublime-macro"},
+        "context":
+        [
+            { 
+                "key": "selection_empty", "operator": "equal",
+                "operand": true, "match_all": false,
+            },
+        ],
+    },	   
+    { "keys": ["ctrl+d"], "command": "run_macro_file",
+        "args": {"file": "res:\\Packages/User/duplicate_lines_fix.sublime-macro"},
+        "context":
+        [
+            { 
+                // "key": "selection_empty", "operator": "equal",
+                // "operand": true, "match_all": false,
+            },
+        ],
+    },
+]

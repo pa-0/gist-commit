@@ -1,0 +1,39 @@
+/* <textarea> does not support an `::after` pseudo-element so some selector wrangling is needed */
+[data-js~="copy"]:not(textarea),
+:has(> textarea[data-js~="copy"]) {
+  padding-right: 2em;
+  position: relative;
+  transition: all 1s ease-in-out;
+}
+
+[data-js~="copy"]:not(textarea)::after,
+:has(> textarea[data-js~="copy"])::after {
+  /* https://icon-sets.iconify.design/line-md/clipboard-arrow/ */
+  content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" viewBox="0 0 24 24"%3E%3Cg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"%3E%3Cg stroke-width="2"%3E%3Cpath stroke-dasharray="16" stroke-dashoffset="16" d="M12 3H19V11"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="16%3B0"%2F%3E%3C%2Fpath%3E%3Cpath stroke-dasharray="44" stroke-dashoffset="44" d="M19 17V21H5V3H12"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="0.2s" dur="0.4s" values="44%3B0"%2F%3E%3C%2Fpath%3E%3Cpath stroke-dasharray="10" stroke-dashoffset="10" d="M21 14H12.5"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="10%3B0"%2F%3E%3C%2Fpath%3E%3Cpath stroke-dasharray="6" stroke-dashoffset="6" d="M12 14L15 17M12 14L15 11"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" values="6%3B0"%2F%3E%3C%2Fpath%3E%3C%2Fg%3E%3Cpath stroke-dasharray="12" stroke-dashoffset="12" d="M14.5 3.5V6.5H9.5V3.5"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.2s" values="12%3B0"%2F%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  opacity: 0.35;
+  position: absolute;
+  right: 0.15em;
+  top: 0.15em;
+  width: 1.35em;
+}
+
+[data-js~="copy"]:not(textarea):hover::after,
+:has(> textarea[data-js~="copy"]):hover::after {
+  opacity: 1;
+}
+
+[data-js~="copy"]:not(textarea).copied::after,
+:has(> textarea[data-js~="copy"]).copied::after {
+  /* https://icon-sets.iconify.design/line-md/clipboard-check-twotone/ */
+  content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" viewBox="0 0 24 24"%3E%3Cpath fill="lime" fill-opacity="0" d="M6 4H10V6H14V4H18V20H6V4Z"%3E%3Canimate fill="freeze" attributeName="fill-opacity" begin="1.2s" dur="0.15s" values="0%3B0.3"%2F%3E%3C%2Fpath%3E%3Cg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"%3E%3Cg stroke-width="2"%3E%3Cpath stroke-dasharray="66" stroke-dashoffset="66" d="M12 3H19V21H5V3H12Z"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="66%3B0"%2F%3E%3C%2Fpath%3E%3Cpath stroke-dasharray="10" stroke-dashoffset="10" d="M9 13L11 15L15 11"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="10%3B0"%2F%3E%3C%2Fpath%3E%3C%2Fg%3E%3Cpath stroke-dasharray="12" stroke-dashoffset="12" d="M14.5 3.5V6.5H9.5V3.5"%3E%3Canimate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.2s" values="12%3B0"%2F%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+  fill: lime;
+  opacity: 1;
+}
+
+:has(> textarea[data-js~="copy"]) {
+  display: block;
+  width: calc(100% + 2.05em);
+}

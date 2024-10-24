@@ -1,0 +1,26 @@
+{
+	"ignored_packages":
+	[
+		"Vintage",
+	],
+	"color_scheme": "Mariana.sublime-color-scheme",
+
+	"word_wrap": false,
+	"auto_find_in_selection": true,
+	"highlight_modified_tabs": true,
+	"hardware_acceleration": true,
+	"remember_full_screen": true,
+	"remember_layout": true,
+	// "open_files_in_new_window": "always",
+	"show_project_first": true,
+	"select_across_groups": true,
+	"dictionary": "Packages/Language/hu_HU.dic",
+	"match_brackets_angle": true,
+	/*"remember_full_screen": true,*/
+	"hot_exit": "always",
+	"remember_workspace": true,
+
+	"detect_indentation": false,
+
+	"font_size": 14,
+}

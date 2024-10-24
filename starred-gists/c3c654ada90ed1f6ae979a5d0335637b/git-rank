@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# Contributor Ranking
+#
+# Author: Tom Cammann, Heath Stewart
+#
+
+optspec=":eh-:"
+ext="cs|cpp|h"
+
+while getopts "$optspec" optchar; do
+    case "${optchar}" in
+        -)
+            case "${OPTARG}" in
+                extension)
+                    ext="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    ;;
+                extension=*)
+                    ext=${OPTARG#*=}
+                    ;;
+                *)
+                    if [ "$OPTERR" == 1 ] && [ "$optspec:0:1}" != ":" ]; then
+                        echo "Error: unknown option --${OPTARG}" >&2
+                        exit 1
+                    fi
+                    ;;
+            esac;;
+        e)
+            ext="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+            ;;
+        h)
+            echo "Usage: $0 [-h] [-e|--extension[=]<e1|e2|...>]" >&2
+            exit 2
+            ;;
+        *)
+            if [ "$OPTERR" != 1] || [ "${optspec:0:1}" == ":" ]; then
+                echo "Error: unknown argument: '-${OPTARG}'" >&2
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+if [ "$ext" == "" ]; then
+    echo "Error: one or more extensions delimited by '|' required"
+    exit 1
+fi
+
+function contrib_list {
+    # Find all email address names used to commit
+    authors=$( git log --format='%aE' | cut -d"@" -f1 | sort -u )
+
+    # For each commit match no binary files that have changed and capture the number
+    for i in ${authors}; do
+        echo "$i" $(git log --author="$i" --no-merges --stat | awk 'BEGIN{ FS="|" } /.*\.('$ext')/{match($2, /^ *([0-9]+)/, a); changes += a[1]; commits += 1 } END { print changes " " commits }')
+    done
+}
+
+# Create a mapping from username to commit lines
+# Add different cases of names together.
+n=1
+for i in $(contrib_list |  awk '
+BEGIN{ FS=" " }
+{ a[tolower($1)]["changes"] += $2; a[tolower($1)]["commits"] += $3 }
+END {
+    for( name in a ) {
+        avg = 0
+        if (a[name]["commits"]) {
+            avg = a[name]["changes"]/a[name]["commits"]
+        }
+
+        print name "_" a[name]["changes"] "_changes_in_" a[name]["commits"] "_commits_(" avg "_changes/commit_average)"
+    }
+}' | sort -t"_" -k2 -rn); do
+x=$( echo $i | tr "_" " ")
+echo "${n}. $x"
+(( n++ ))
+done

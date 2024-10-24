@@ -1,0 +1,83 @@
+#!/bin/env zsh
+
+# Run an interactive rebase, automatically marking $1 to be reworded
+function git_rewrite_reword() {
+  GIT_SEQUENCE_EDITOR="sed -ie 's/pick $1/reword $1/'" \
+    git rebase -i --autostash $1^
+}
+
+# Run an interactive rebase, automatically marking $1 to be edited
+function git_rewrite_edit() {
+  GIT_SEQUENCE_EDITOR="sed -ie 's/pick $1/edit $1/'" \
+    git rebase -i --autostash $1^
+}
+
+# Run an interactive rebase, automatically marking $1 to be squashed
+function git_rewrite_squash() {
+  GIT_SEQUENCE_EDITOR="sed -ie 's/pick $1/squash $1/'" \
+    git rebase -i --autostash $1~2
+}
+
+# Run an interactive rebase, automatically stopping at $1 and resetting to the
+# commit before it to leave its changes unstaged ready to commit differently
+function git_rewrite_split() {
+  GIT_SEQUENCE_EDITOR="sed -ie '/pick $1/ a x git reset @~'" \
+    git rebase -i --autostash $1^
+}
+
+# Run an interactive rebase, automatically applying changes in the index to $1
+function git_rewrite_fixup() {
+  git commit --fixup=$1 && \
+    GIT_SEQUENCE_EDITOR="true" \
+    git rebase -i --autostash --autosquash $1^
+}
+
+# Run an interactive rebase, automatically moving the line for $1 back $2 steps in history
+function git_rewrite_move-backward() {
+  : ${2:=1}
+  GIT_SEQUENCE_EDITOR="printf %s\\\\n '/pick $1/m/pick $1/-$(($2 + 1))' w q | ed -s" \
+    git rebase -i --autostash --autosquash $1~$(($2 + 1))
+}
+
+# Run an interactive rebase, automatically moving the line for $1 forward $2 steps in history
+function git_rewrite_move-forward() {
+  : ${2:=1}
+  GIT_SEQUENCE_EDITOR="printf %s\\\\n '/pick $1/m/pick $1/+$2' w q | ed -s" \
+    git rebase -i --autostash --autosquash $1^
+}
+
+function main() {
+  # Make sure we have enough args
+  if (( $# < 2)); then
+    echo "usage: git rewrite <subcommand> <revision>" 1>&2
+    exit 1
+  fi
+
+  # Pop the subcommand
+  local subcommand="$1"
+  shift
+
+  # Make sure the specified subcommand exists
+  if ! typeset -f "git_rewrite_$subcommand" >&-; then
+    echo "unknown subcommand '$subcommand'" 1>&2
+    exit 1
+  fi
+
+  # Pop the revision
+  local rev="$1"
+  shift
+
+  # Look up the commit sha (allow any revision specifying syntax)
+  local commit="$(git rev-parse --short $rev)"
+
+  # Make sure we have a valid commit
+  if [[ -z "$commit" ]]; then
+    echo "could not find rev '$rev'"
+    exit 1
+  fi
+
+  # Delegate out to the subcommand
+  git_rewrite_$subcommand $commit $@
+}
+
+main $@

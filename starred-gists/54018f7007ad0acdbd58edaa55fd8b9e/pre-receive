@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Service side git pre-receive hook
+# Written by Gautier Pelloux-Prayer <gautier+git@damsy.net>, 2014
+#
+# Public domain
+#
+# Simply put this script in server git bare repository <your-git-folder>/hooks and
+# apply 'chmod +x pre-receive'.
+#
+# Prevent pushing invalid submodule reference in a git repository:
+# - reference to non-yet-pushed submodule commit "reference is not a tree" error
+# by forcing user to push submodules first.  This is based on the following information:
+# http://stackoverflow.com/questions/3418674/bash-shell-script-function-to-verify-git-tag-or-commit-exists-and-has-been-pushe
+# - unwanted submodule downgrading or branch switching, mainly caused by previously
+# forgot call to 'git submodule pull'. User can still do that if the commit message specify it.
+
+ENABLE_DEBUG=0
+
+function ECHO_DEBUG { [ $ENABLE_DEBUG = 1 ] && echo "$@" }
+
+# get the previous commit ID, new commit ID, and ref
+read oldoldrev newrev ref
+
+# creating or deleting branch, no need to check
+if [ ${oldoldrev:0:8} = "00000000" ] || [ ${newrev:0:8} = "00000000" ]; then
+	exit 0
+fi
+commit_msg=$(git log --format=%s -n 1 $newrev)
+
+ECHO_DEBUG "$oldoldrev $newrev $ref msg='$commit_msg'"
+
+# Get a list of submodules
+git config --file <(git show $ref:.gitmodules) --get-regexp 'submodule..*.path' |
+while read key path; do
+    url=$(git config --file <(git show $ref:.gitmodules) --get "${key/.path/.url}")
+
+    # submodules URL are (mainly) absolute URLs: eg git://some.random.url.org/a-repository
+    # hook can only check for local repositories stored on the same filesystem, so we assume that
+    # if this is our submodule, it will be located at ../a-repository.git
+    url=$(echo $url | sed -nE 's|.*/(.*)$|../\1.git|p')
+    if [ ! -d "$url" ]; then
+        ECHO_DEBUG "Modified submodule $url but could not find it locally! Canceling check..."
+        continue
+    fi
+    # get absolute URL
+    url=$(cd $url && pwd)
+
+    # foreach commit being pushed, check if this one has been modified
+    git diff "$ref..$newrev" -- "$path" | grep '^-Subproject commit' -A1 | cut -d' ' -f3 |
+    while read sub_old_rev && read sub_new_rev; do
+        ECHO_DEBUG        echo "Checking submodule update: old=$sub_old_rev -> $sub_new_rev"
+        ECHO_DEBUG        echo "$commit_msg | $url"
+        # for each submodule updated, check if the commit exists
+        LINES=$(GIT_DIR="$url" git branch --contains "$sub_new_rev" 2>/dev/null | wc -l)
+        if [ $LINES == 0 ]; then
+            echo "*****************************************"
+            echo "Error in ${newrev:0:8}($commit_msg):"
+            echo "  Subcommit '${sub_new_rev:0:8}' not found in submodule '$path' ($url)." >&2
+            echo "  Please push that submodule first!" >&2
+            echo "*****************************************"
+            exit 1
+        else
+            # and also check that the new reference is NOT parent of the old reference (submodule downgrade)
+            if GIT_DIR="$url" git rev-list "$sub_old_rev" | grep -q "$sub_new_rev"; then
+                expc_pattern="[Outgrade submodule]"
+                if grep -Fq "$expc_pattern" <<< "$commit_msg"; then
+                    echo "*****************************************"
+                    echo "Warning! You are going to out-grade submodule '$path' from ${sub_old_rev:0:8} to ${sub_new_rev:0:8}, but since your commit message contains '$expc_pattern', I'll let you do that."
+                    echo "*****************************************"
+                else
+                    echo "*****************************************"
+                    echo "Error in ${newrev:0:8}($commit_msg):"
+                    echo "    Error! You are trying to out-grade submodule '$path' from ${sub_old_rev:0:8} to ${sub_new_rev:0:8}, which usually means you forgot to execute 'git submodule update'. Did you?"
+                    echo "    If you REALLY want to OUTGRADE submodule '$path', please add '$expc_pattern' in your commit message (id='${newrev:0:8}') using 'git commit --amend'. Current message is: '$commit_msg'".
+                    echo "*****************************************"
+                    exit 1
+                fi
+            # finally check that old reference IS reference of new reference (submodule branch switch)
+            elif ! GIT_DIR="$url" git rev-list "$sub_new_rev" | grep -q "$sub_old_rev"; then
+                expc_pattern="[Switch submodule branch]"
+                if grep -Fq "$expc_pattern" <<< "$commit_msg"; then
+                    echo "*****************************************"
+                    echo "Warning! You are going to switch submodule branch '$path' from ${sub_old_rev:0:8} to ${sub_new_rev:0:8}, but since your commit message contains '$expc_pattern', I'll let you do that."
+                    echo "*****************************************"
+                else
+                    echo "*****************************************"
+                    echo "Error in ${newrev:0:8}($commit_msg):"
+                    echo "    Error! You are trying to switch submodule branch '$path' from ${sub_old_rev:0:8} to ${sub_new_rev:0:8}, which usually means you forgot to execute 'git submodule update'. Did you?"
+                    echo "    If you REALLY want to SWITCH BRANCH submodule '$path', please add '$expc_pattern' in your commit message (id='${newrev:0:8}') using 'git commit --amend'. Current message is: '$commit_msg'".
+                    echo "*****************************************"
+                    exit 1
+                fi
+            fi
+        fi
+    done || exit 1
+done || exit 1
+
+exit 0
+
+

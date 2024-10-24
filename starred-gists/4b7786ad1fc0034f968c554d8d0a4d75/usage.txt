@@ -1,0 +1,1 @@
+bclip.exe < test.html

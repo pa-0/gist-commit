@@ -1,0 +1,55 @@
+#to get all commit msgs // to fix- git log
+git config --global core.pager "cat"
+
+#remove .env file --if already commited on github
+git rm --cached .env
+
+to remove files from github repo if static file get uploaded r stands for recursive to remove the folder
+git rm --cached -r react-static
+
+# Add files to staging area
+git add cafess.js
+
+# Check if files are added to staging area
+git status
+
+# Make a commit
+git commit -m "first commit"
+
+# Push main branch to github/Bitbucket
+git push -u origin main
+git push -u origin master
+
+
+# Show all branches
+git branch
+
+# Clone a github repository
+git clone ssh_url_paste 
+
+# Show all comit messages
+git log
+
+# Show commit messages in one pretty line format
+git log  --pretty=oneline 
+
+# connect github repos 
+git remote add origin git@github.com:piyushpratek/EcommerceMernProject.git
+========================================================
+to open folder in vscode 
+write cmd 
+then code .
+
+
+Set your username:
+git config --global user.name "Piyush Prateek"
+
+Set your email address:
+git config --global user.email "piyushprateek231996@gmail.com"
+
+to merge develop to main:
+git merge develop
+then below would be icon next to main
+
+change pager to cat for view "git log"
+git config --global core.pager "cat"

@@ -1,0 +1,15 @@
+# Doc: https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+# Settings apply across all Linux distros running on WSL 2
+[wsl2]
+
+# Limits VM memory to use no more than 10 GB, this can be set as whole numbers using GB or MB
+memory=10GB 
+
+# Sets the VM to use two virtual processors
+processors=2
+
+# Sets amount of swap storage space to 10GB, default is 25% of available RAM
+swap=10GB
+
+# Turns off output console showing contents of dmesg when opening a WSL 2 distro for debugging
+debugConsole=false

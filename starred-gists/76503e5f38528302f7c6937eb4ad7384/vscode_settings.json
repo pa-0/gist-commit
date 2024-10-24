@@ -1,0 +1,19 @@
+{
+    "editor.mouseWheelZoom": true,
+    "editor.minimap.enabled": false,
+    "workbench.colorTheme": "Zenburn",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "files.autoGuessEncoding": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "blankLine.keepOneEmptyLine": true,
+    "blankLine.triggerOnSave": true,
+    "blankLine.languageIds": [
+        "powershell",
+        "java"
+    ],
+    "files.autoSave": "off",
+    "editor.renderIndentGuides": true
+}

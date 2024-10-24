@@ -1,0 +1,8 @@
+To create next js app
+"npx create-next-app@latest"
+
+object-detection -
+"npm i react-webcam
+npm i @tensorflow-models/coco-ssd @tensorflow/tfjs
+ npm i lodash
+npm i --save-dev @types/lodash"

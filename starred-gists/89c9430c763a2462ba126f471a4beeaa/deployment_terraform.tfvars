@@ -1,0 +1,6 @@
+bucket = "realestate-berlin-254211-items"
+cloud_source_repository = "github_irio_wohnung"
+crontab_schedule = "44 8 * * *"
+project = "realestate-berlin-254211"
+region = "us-east1"
+zone = "us-east1-b"

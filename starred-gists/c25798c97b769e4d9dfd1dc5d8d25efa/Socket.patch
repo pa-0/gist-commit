@@ -1,0 +1,18 @@
+--- Socket.original.ahk	2022-07-01 00:13:05.642530700 -0500
++++ Socket.ahk	2022-07-01 00:13:05.642530700 -0500
+@@ -1,0 +2,6 @@
++; Original:
++; https://github.com/G33kDude/Socket.ahk
++
++; This revision:
++; https://gist.github.com/0e6968cec5555c4ac44f614aaf264aef
++
+@@ -10 +16 @@
+-		static Init
++		static Init := false
+@@ -113 +119 @@
+-		if (DllCall("Ws2_32\ioctlsocket", "UInt", this.Socket, "UInt", FIONREAD, "UInt*", argp) == -1)
++		if (DllCall("Ws2_32\ioctlsocket", "UInt", this.Socket, "UInt", FIONREAD, "UInt*", argp := 0) == -1)
+@@ -174 +180 @@
+-		if (Error := DllCall("Ws2_32\getaddrinfo", "AStr", Host, "AStr", Port, "Ptr", &Hints, "Ptr*", Result))
++		if (Error := DllCall("Ws2_32\getaddrinfo", "AStr", Host, "AStr", Port, "Ptr", &Hints, "Ptr*", Result := 0))

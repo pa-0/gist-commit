@@ -1,0 +1,114 @@
+--- Elevate.ahk
++++ Elevate1.ahk
+@@ -1 +1 @@
+-﻿#Requires AutoHotkey v2.0
++﻿#Requires AutoHotkey v1.1
+@@ -7,2 +7,2 @@
+-Elevate(Target, WorkingDir := "", Options := "", &OutputVarPID := 0) {
+-    return Elevate_(false, Target, WorkingDir, Options, &OutputVarPID)
++Elevate(Target, WorkingDir := "", Options := "", ByRef OutputVarPID := 0) {
++    return Elevate_(false, Target, WorkingDir, Options, OutputVarPID)
+@@ -11,2 +11,2 @@
+-ElevateWait(Target, WorkingDir := "", Options := "", &OutputVarPID := 0) {
+-    return Elevate_(true, Target, WorkingDir, Options, &OutputVarPID)
++ElevateWait(Target, WorkingDir := "", Options := "", ByRef OutputVarPID := 0) {
++    return Elevate_(true, Target, WorkingDir, Options, OutputVarPID)
+@@ -18,6 +18,6 @@
+-Elevate_(bWait, Target, WorkingDir, Options, &OutputVarPID) {
+-    template := '
+-    (
+-        #Requires AutoHotkey v2.0
+-        Persistent(true)
+-        TraySetIcon("imageres.dll", 265)
++Elevate_(bWait, Target, WorkingDir, Options, ByRef OutputVarPID) {
++    template =
++    (%
++        #Requires AutoHotkey v1.1
++        #Persistent
++        Menu Tray, Icon, imageres.dll, 265
+@@ -26,4 +26,4 @@
+-        FileOpen(A_WinDir "\Temp\AhkElevate2.run", 0x1).Write(ahkPid)
+-        SetTimer(CheckIt, 1)
+-        SetTimer(RunIt, -1)
+-        Exit() ; End of auto-execute
++        FileOpen(A_WinDir "\Temp\AhkElevate1.run", 0x1).Write(ahkPid)
++        SetTimer CheckIt, 1
++        SetTimer RunIt, -1
++        Exit ; End of auto-execute
+@@ -32,4 +32,5 @@
+-            exitCode := {}("{}", "{}", "{}", &appPid)
+-            FileOpen(A_WinDir "\Temp\AhkElevate2.ec", 0x1).Write(exitCode)
+-            FileDelete(A_ScriptFullPath)
+-            ExitApp(IsNumber(exitCode) ? exitCode : 0)
++            {} {}, {}, {}, appPid
++            exitCode := ErrorLevel
++            FileOpen(A_WinDir "\Temp\AhkElevate1.ec", 0x1).Write(exitCode)
++            FileDelete % A_ScriptFullPath
++            ExitApp % Format("{:d}", exitCode)
+@@ -40,2 +41,2 @@
+-                FileOpen(A_WinDir "\Temp\AhkElevate2.pid", 0x1).Write(appPid)
+-                SetTimer(CheckIt, 0)
++                FileOpen(A_WinDir "\Temp\AhkElevate1.pid", 0x1).Write(appPid)
++                SetTimer CheckIt, Delete
+@@ -44,2 +45,2 @@
+-    )'
+-    Target := StrReplace(Target, "`"", "```"")
++    )
++    Target := StrReplace(Target, """", """""")
+@@ -47 +48 @@
+-    try FileDelete(A_WinDir "\Temp\AhkElevate2.*")
++    try FileDelete % A_WinDir "\Temp\AhkElevate1.*"
+@@ -49 +50 @@
+-        FileOpen(A_WinDir "\Temp\AhkElevate2.ahk", 0x1).Write(template)
++        FileOpen(A_WinDir "\Temp\AhkElevate1.ahk", 0x1).Write(template)
+@@ -51 +52 @@
+-        throw Error("There was an error creating the script for the task.", -1)
++        throw Exception("There was an error creating the script for the task.", -1)
+@@ -54 +55 @@
+-        ErrorLevel := RunWait("schtasks.exe /Run /TN AhkElevate2 /HRESULT", , "Hide")
++        RunWait schtasks.exe /Run /TN AhkElevate1 /HRESULT, , Hide
+@@ -57,2 +58,2 @@
+-                MsgBox("Scheduled task not added, cannot continue.", , 0x40010)
+-                Exit()
++                MsgBox 0x40010, , Scheduled task not added`, cannot continue.
++                Exit
+@@ -65 +66 @@
+-        throw Error("There was an error while running the scheduled task.", -1)
++        throw Exception("There was an error while running the scheduled task.", -1)
+@@ -67 +68 @@
+-    while (!FileExist(A_WinDir "\Temp\AhkElevate2.run")) {
++    while (!FileExist(A_WinDir "\Temp\AhkElevate1.run")) {
+@@ -73 +74 @@
+-            OutputVarPID := FileOpen(A_WinDir "\Temp\AhkElevate2.pid", 0x0).Read()
++            OutputVarPID := FileOpen(A_WinDir "\Temp\AhkElevate1.pid", 0x0).Read()
+@@ -77 +78 @@
+-    try FileDelete(A_WinDir "\Temp\AhkElevate2.pid")
++    try FileDelete % A_WinDir "\Temp\AhkElevate1.pid"
+@@ -79 +80 @@
+-        ProcessWaitClose(OutputVarPID)
++        Process WaitClose, % OutputVarPID
+@@ -84,2 +85,2 @@
+-            ahkPid := FileOpen(A_WinDir "\Temp\AhkElevate2.run", 0x0).Read()
+-            ProcessWaitClose(ahkPid)
++            ahkPid := FileOpen(A_WinDir "\Temp\AhkElevate1.run", 0x0).Read()
++            Process WaitClose, % ahkPid
+@@ -89 +90 @@
+-    try FileDelete(A_WinDir "\Temp\AhkElevate2.run")
++    try FileDelete % A_WinDir "\Temp\AhkElevate1.run"
+@@ -94 +95 @@
+-            exitCode := FileOpen(A_WinDir "\Temp\AhkElevate2.ec", 0x0).Read()
++            exitCode := FileOpen(A_WinDir "\Temp\AhkElevate1.ec", 0x0).Read()
+@@ -97 +98 @@
+-    try FileDelete(A_WinDir "\Temp\AhkElevate2.ec")
++    try FileDelete % A_WinDir "\Temp\AhkElevate1.ec"
+@@ -105,2 +106,2 @@
+-    xml := '<?xml version="1.0" encoding="UTF-16"?><Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1970-01-01T00:00:00</StartBoundary><Enabled>true</Enabled></TimeTrigger></Triggers><Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>HighestAvailable</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><ExecutionTimeLimit>PT0S</ExecutionTimeLimit></Settings><Actions Context="Author"><Exec><Command>"C:\Program Files\AutoHotkey\v2\AutoHotkey.exe"</Command><Arguments>"' A_WinDir '\Temp\AhkElevate2.ahk"</Arguments></Exec></Actions></Task>'
+-    FileOpen(A_Temp "\AhkElevate2.xml", 0x1, "UTF-16").Write(xml)
++    xml = <?xml version="1.0" encoding="UTF-16"?><Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1970-01-01T00:00:00</StartBoundary><Enabled>true</Enabled></TimeTrigger></Triggers><Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>HighestAvailable</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><ExecutionTimeLimit>PT0S</ExecutionTimeLimit></Settings><Actions Context="Author"><Exec><Command>"C:\Program Files\AutoHotkey\AutoHotkey.exe"</Command><Arguments>"%A_WinDir%\Temp\AhkElevate1.ahk"</Arguments></Exec></Actions></Task>
++    FileOpen(A_Temp "\AhkElevate1.xml", 0x1, "UTF-16").Write(xml)
+@@ -108 +109 @@
+-        RunWait("*RunAs schtasks.exe /Create /TN AhkElevate2 /XML `"" A_Temp "\AhkElevate2.xml`" /F", , "Hide")
++        RunWait % "*RunAs schtasks.exe /Create /TN AhkElevate1 /XML """ A_Temp "\AhkElevate1.xml"" /F", , Hide
+@@ -113 +114 @@
+-        FileDelete(A_Temp "\AhkElevate2.xml")
++        FileDelete % A_Temp "\AhkElevate1.xml"

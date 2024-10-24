@@ -1,0 +1,57 @@
+' Using wget
+wget --mirror --convert-links  --html-extension --no-parent --level=5 --wait=2  -o log  https://example.com
+
+
+' Macro Runner
+using System;
+using Microsoft.Office.Interop.Excel;
+
+class MacroRunner
+{
+    static void Main()
+    {
+        //Create your instance of Excel Application...
+        Application excelApp = new Application();
+
+        //Make the Excel workbook visible, optional if you want to...
+        excelApp.Visible = true;
+
+        //Open the workbook containing your macros...
+        Workbook workbook = excelApp.Workbooks.Open(@"C:\Path\ToYour\Workbook.xlsm");
+
+        //Display a list of all your available macros...
+        DisplayListOfMacros(workbook);
+
+        //Select a macro...
+        Console.Write("Enter the name of the macro you want to run -> ");
+        string selectedMacro = Console.ReadLine();
+
+        //Run the selected macro...
+        RunMacro(workbook, selectedMacro);
+
+        //Close your Excel app...
+        excelApp.Quit();
+    }
+
+    static void DisplayListOfMacros(Workbook workbook)
+    {
+        Console.WriteLine("Available Macros ->");
+        foreach (VBComponent component in workbook.VBProject.VBComponents)
+        {
+            Console.WriteLine(component.Name);
+        }
+        Console.WriteLine();
+    }
+
+    static void RunMacro(Workbook workbook, string macroName)
+    {
+        try
+        {
+            workbook.Application.Run(macroName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error running macro '{macroName}': {ex.Message}");
+        }
+    }
+}

@@ -1,0 +1,105 @@
+diff -ru 5.5.1-src.orig/qtbase/mkspecs/common/msvc-desktop.conf 5.5.1-src/qtbase/mkspecs/common/msvc-desktop.conf
+--- 5.5.1-src.orig/qtbase/mkspecs/common/msvc-desktop.conf	2015-10-13 07:35:32.000000000 +0300
++++ 5.5.1-src/qtbase/mkspecs/common/msvc-desktop.conf	2015-10-18 01:55:40.508885800 +0300
+@@ -25,7 +25,7 @@
+ QMAKE_LEXFLAGS          =
+ QMAKE_YACC              = byacc
+ QMAKE_YACCFLAGS         = -d
+-QMAKE_CFLAGS            = -nologo -Zc:wchar_t
++QMAKE_CFLAGS            = -nologo -Zc:wchar_t -EHsc
+ QMAKE_CFLAGS_WARN_ON    = -W3
+ QMAKE_CFLAGS_WARN_OFF   = -W0
+ QMAKE_CFLAGS_RELEASE    = -O2 -MD
+diff -ru 5.5.1-src.orig/qtbase/src/dbus/qdbus_symbols.cpp 5.5.1-src/qtbase/src/dbus/qdbus_symbols.cpp
+--- 5.5.1-src.orig/qtbase/src/dbus/qdbus_symbols.cpp	2015-10-13 07:35:32.000000000 +0300
++++ 5.5.1-src/qtbase/src/dbus/qdbus_symbols.cpp	2015-10-18 03:01:40.781646400 +0300
+@@ -84,14 +84,24 @@
+     lib->setLoadHints(QLibrary::ExportExternalSymbolsHint); // make libdbus symbols available for apps that need more advanced control over the dbus
+     triedToLoadLibrary = true;
+ 
++#ifdef _DEBUG
++#define DBG_SUFFIX "d"
++#else
++#define DBG_SUFFIX ""
++#endif
++
+     static int majorversions[] = { 3, 2, -1 };
+     const QString baseNames[] = {
+ #ifdef Q_OS_WIN
+-        QLatin1String("dbus-1"),
++        QLatin1String("dbus-1" DBG_SUFFIX "-3"),
++        QLatin1String("dbus-1" DBG_SUFFIX),
+ #endif
+-        QLatin1String("libdbus-1")
++        QLatin1String("libdbus-1" DBG_SUFFIX "-3"),
++        QLatin1String("libdbus-1" DBG_SUFFIX)
+     };
+ 
++#undef DBG_SUFFIX
++
+     lib->unload();
+     for (uint i = 0; i < sizeof(majorversions) / sizeof(majorversions[0]); ++i) {
+         for (uint j = 0; j < sizeof(baseNames) / sizeof(baseNames[0]); ++j) {
+diff -ru 5.5.1-src.orig/qtbase/src/network/ssl/qsslsocket_openssl_symbols.cpp 5.5.1-src/qtbase/src/network/ssl/qsslsocket_openssl_symbols.cpp
+--- 5.5.1-src.orig/qtbase/src/network/ssl/qsslsocket_openssl_symbols.cpp	2015-10-13 07:35:28.000000000 +0300
++++ 5.5.1-src/qtbase/src/network/ssl/qsslsocket_openssl_symbols.cpp	2015-10-18 01:52:48.133789800 +0300
+@@ -588,17 +588,25 @@
+     pair.first = 0;
+     pair.second = 0;
+ 
++#ifdef _DEBUG
++#define DBG_SUFFIX "d"
++#else
++#define DBG_SUFFIX ""
++#endif
++
+     // When OpenSSL is built using MSVC then the libraries are named 'ssleay32.dll' and 'libeay32'dll'.
+     // When OpenSSL is built using GCC then different library names are used (depending on the OpenSSL version)
+     // The oldest version of a GCC-based OpenSSL which can be detected by the code below is 0.9.8g (released in 2007)
+-    if (!tryToLoadOpenSslWin32Library(QLatin1String("ssleay32"), QLatin1String("libeay32"), pair)) {
+-        if (!tryToLoadOpenSslWin32Library(QLatin1String("libssl-10"), QLatin1String("libcrypto-10"), pair)) {
+-            if (!tryToLoadOpenSslWin32Library(QLatin1String("libssl-8"), QLatin1String("libcrypto-8"), pair)) {
+-                tryToLoadOpenSslWin32Library(QLatin1String("libssl-7"), QLatin1String("libcrypto-7"), pair);
++    if (!tryToLoadOpenSslWin32Library(QLatin1String("ssleay32" DBG_SUFFIX), QLatin1String("libeay32" DBG_SUFFIX), pair)) {
++        if (!tryToLoadOpenSslWin32Library(QLatin1String("libssl-10" DBG_SUFFIX), QLatin1String("libcrypto-10" DBG_SUFFIX), pair)) {
++            if (!tryToLoadOpenSslWin32Library(QLatin1String("libssl-8" DBG_SUFFIX), QLatin1String("libcrypto-8" DBG_SUFFIX), pair)) {
++                tryToLoadOpenSslWin32Library(QLatin1String("libssl-7" DBG_SUFFIX), QLatin1String("libcrypto-7" DBG_SUFFIX), pair);
+             }
+         }
+     }
+ 
++#undef DBG_SUFFIX
++
+     return pair;
+ }
+ #else
+diff -ru 5.5.1-src.orig/qtimageformats/src/3rdparty/zlib_dependency.pri 5.5.1-src/qtimageformats/src/3rdparty/zlib_dependency.pri
+--- 5.5.1-src.orig/qtimageformats/src/3rdparty/zlib_dependency.pri	2015-10-13 07:36:59.000000000 +0300
++++ 5.5.1-src/qtimageformats/src/3rdparty/zlib_dependency.pri	2015-10-18 01:53:36.805581500 +0300
+@@ -1,7 +1,10 @@
+ # zlib dependency satisfied by bundled 3rd party zlib or system zlib
+ contains(QT_CONFIG, system-zlib) {
+     unix|mingw: LIBS_PRIVATE += -lz
+-    else:       LIBS += zdll.lib
++    else {
++        isEmpty(ZLIB_LIBS): LIBS += zdll.lib
++        else: LIBS += $$ZLIB_LIBS
++    }
+ } else {
+     load(qt_build_paths)
+     git_build: \
+diff -ru 5.5.1-src.orig/qtsvg/src/svg/svg.pro 5.5.1-src/qtsvg/src/svg/svg.pro
+--- 5.5.1-src.orig/qtsvg/src/svg/svg.pro	2015-10-13 07:36:57.000000000 +0300
++++ 5.5.1-src/qtsvg/src/svg/svg.pro	2015-10-18 01:54:08.883810900 +0300
+@@ -46,7 +46,10 @@
+ 
+ contains(QT_CONFIG, system-zlib) {
+     if(unix|mingw):          LIBS_PRIVATE += -lz
+-    else:                    LIBS += zdll.lib
++    else {
++        isEmpty(ZLIB_LIBS): LIBS += zdll.lib
++        else: LIBS += $$ZLIB_LIBS
++    }
+ } else {
+     git_build: \
+         INCLUDEPATH += $$[QT_INSTALL_HEADERS/get]/QtZlib

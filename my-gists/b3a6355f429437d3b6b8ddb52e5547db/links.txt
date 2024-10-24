@@ -1,0 +1,5 @@
+--- Enterprise ---
+http://boxstarter.org/package/url?https://gist.githubusercontent.com/Kralizek/45bec2b3b48594b1b802a765fa6c234e/raw/c2d40e1e637a74234989ab3a8032d97302212000/developer-enterprise.txt
+
+--- Professional ---
+http://boxstarter.org/package/url?https://gist.githubusercontent.com/Kralizek/45bec2b3b48594b1b802a765fa6c234e/raw/c2d40e1e637a74234989ab3a8032d97302212000/developer-professional.txt

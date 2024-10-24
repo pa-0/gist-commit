@@ -1,0 +1,1 @@
+cmd://"C:\Program Files (x86)\Mobatek\MobaXterm\MobaXterm.exe" -newtab "ssh {USERNAME}@{URL:RMVSCM}"

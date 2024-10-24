@@ -1,0 +1,25 @@
+
+Windows 10 post install script
+
+Please see post_install_part1.ps1 and  post_install_part2.ps1 for details
+
+Part 1 - Fix Privacy, Explorer, Logon and misc windows settings
+----------------------------------------------------------------------------------------------------------
+Disable-UAC
+Disable-UpdateRestart
+Disable-Autoplay
+Update-ExplorerSettings
+Update-WindowsTheme
+Disable-Defender
+Update-PrivacySettings
+Disable-LockscreenPolicies
+Disable-SearchPolicies
+Disable-OemSystemPolicies
+
+Part 2 - Install apps and utils via Chocolatey
+------------------------------------------------
+Install-Chocolatey
+Install-BaseApps
+Install-DevApps
+Install-Tools
+Install-awscli

@@ -1,0 +1,97 @@
+Sub ProcessAttachment(item As Outlook.MailItem)
+'An Outlook macro by Graham Mayor
+    On Error Resume Next
+    SaveAttachments item
+lbl_Exit:
+    Exit Sub
+End Sub
+
+Private Sub SaveAttachments(olItem As MailItem)
+'Graham Mayor - http://www.gmayor.com - Last updated - 10 Aug 2018
+Dim olAttach As Attachment
+Dim strFname As String
+Dim strFilePath As String
+Dim strExt As String
+Dim j As Long
+Dim strSaveFldr As String
+Dim objShell As Object
+
+    On Error GoTo lbl_Exit
+    Set objShell = CreateObject("Shell.Application")
+    strSaveFldr = Environ("USERPROFILE") & "\Documents\Subfolder"
+    CreateFolders strSaveFldr
+    If olItem.Attachments.Count > 0 Then
+        For j = 1 To olItem.Attachments.Count
+            Set olAttach = olItem.Attachments(j)
+            strFname = olAttach.FileName
+            strExt = Right(strFname, Len(strFname) - InStrRev(strFname, Chr(46)))
+            If strExt = "zip" Then
+                olAttach.SaveAsFile strSaveFldr & strFname
+                strFilePath = strSaveFldr & strFname
+                UnzipWithPassword strSaveFldr, strFilePath, "XXX"
+            End If
+        Next j
+        olItem.Save
+    End If
+lbl_Exit:
+    Set olAttach = Nothing
+    Set olItem = Nothing
+    Exit Sub
+End Sub
+
+Private Sub UnzipWithPassword(folder As String, fname As Variant, sZipPassword As String)
+
+Dim objShell As Object
+Dim FileNameFolder As Variant
+Dim DefPath As String
+Dim strDate As String
+Dim sPathTo7ZipExe As String
+Dim strCommand As String
+Dim sShellCmd As String
+Do
+    With New FileSystemObject
+        If .FileExists(fname) Then
+    
+            Exit Do
+        End If
+        Application.Wait Now + TimeValue("0:00:01") 'wait for one second
+    End With
+Loop
+sPathTo7ZipExe = """C:\Program Files\7-Zip\7z.exe"""
+sShellCmd = " x" & _
+" " & Chr(34) & fname & Chr(34) & _
+        " -p" & sZipPassword & _
+                " -o" & Chr(34) & folder & Chr(34)
+        
+Shell sPathTo7ZipExe & sShellCmd
+Application.Wait Now + TimeValue("0:00:01")
+lbl_Exit:
+    Exit Sub
+End Sub
+Private Function FolderExists(fldr) As Boolean
+'An Outlook macro by Graham Mayor
+Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If (fso.FolderExists(fldr)) Then
+        FolderExists = True
+    Else
+        FolderExists = False
+    End If
+lbl_Exit:
+    Exit Function
+End Function
+
+Private Function CreateFolders(strPath As String)
+'An Outlook macro by Graham Mayor
+Dim strTempPath As String
+Dim lngPath As Long
+Dim vPath As Variant
+    vPath = Split(strPath, "\")
+    strPath = vPath(0) & "\"
+    For lngPath = 1 To UBound(vPath)
+        strPath = strPath & vPath(lngPath) & "\"
+        If Not FolderExists(strPath) Then MkDir strPath
+    Next lngPath
+lbl_Exit:
+    Exit Function
+End Function

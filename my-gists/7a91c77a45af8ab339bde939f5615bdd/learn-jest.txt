@@ -1,0 +1,3 @@
+# Run single test file:
+npm run test -- fileName
+t -- fileName

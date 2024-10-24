@@ -1,0 +1,18 @@
+https://stackoverflow.com/a/69866593 --for v6 react-router-dom exact is not needed.
+
+https://www.youtube.com/watch?v=QuLfCUh-iwI three mistakes in react
+
+--easy Dubugging,Data Debugging, Fetch requests
+console.log('page2 data?', data);
+console.log('keys?', Object.keys(data));
+Object.assign(window, { data, userInfo: usersInfo, loading });
+
+to access the keys of data
+console.log('my chats keys', Object.keys(res.data));
+
+to give key and use map function 
+<div>
+      {chats.map((chat) => (
+        <div key={chat._id}>{chat.chatName}</div>
+      ))}
+    </div>

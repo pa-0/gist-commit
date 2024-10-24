@@ -1,0 +1,78 @@
+#!/bin/bash
+set -e
+
+usage() {
+    echo "Usage: $0 USERNAME" 2>&1
+    exit 1
+}
+
+username="$1"
+[ -z "$username" ] && usage
+
+[ -z "$GITLAB_TOKEN" ] && GITLAB_TOKEN=$(pass gitlab/tokens/cli)
+[ -z "$GITHUB_TOKEN" ] && GITHUB_TOKEN=$(pass github/tokens/cli)
+[ -z "$BITBUCKET_TOKEN" ] && BITBUCKET_TOKEN=$(pass bitbucket/tokens/cli)
+
+gitlab_repos() {
+    url="$1"
+    [ -z "$url" ] && url="https://gitlab.com/api/v3/projects"
+
+    curl -s -i -H "PRIVATE-TOKEN:$GITLAB_TOKEN" "$url" | pagination_link | {
+        IFS= read -r url
+        cat
+        echo
+        [ -z "$url" ] || gitlab_repos "$url"
+    }
+}
+
+github_repos() {
+    url="$1"
+    [ -z "$url" ] && url="https://api.github.com/user/repos"
+
+    curl -s -i -u "$username:$GITHUB_TOKEN" "$url" | pagination_link | {
+        IFS= read -r url
+        cat
+        echo
+        [ -z "$url" ] || github_repos "$url"
+    }
+}
+
+bitbucket_repos() {
+    url="$1"
+    [ -z "$url" ] && url="https://api.bitbucket.org/2.0/repositories/$username"
+
+    curl -s -u "$username:$BITBUCKET_TOKEN" "$url" | jq -r '.next,.values' | {
+        IFS= read -r url
+        cat
+        echo
+        [ "$url" == "null" ] || bitbucket_repos "$url"
+    }
+}
+
+gitlab_repos |
+    jq --arg user "$username" '
+      .[] | select(.owner.username == $user) |
+            { name,
+            id,
+            remote: "gitlab",
+            private: (.public | not),
+            url: .ssh_url_to_repo }'
+
+github_repos |
+    jq --arg user "$username" '
+      .[] | select(.owner.login == $user) |
+            { name,
+            id,
+            remote: "github",
+            private,
+            url: .ssh_url }'
+
+bitbucket_repos |
+    jq '.[] | { name,
+                id: .uuid,
+                remote: "bitbucket",
+                private: .is_private,
+                url: .links.clone |
+                    map({key: .name, value:.href}) |
+                    from_entries |
+                    .ssh }'

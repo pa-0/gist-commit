@@ -1,0 +1,20 @@
+# Get all XML files - xml can be replaced with any other file extension
+$files = Get-ChildItem *.xml -Recurse
+
+# Loop over files to rename and create individual zip copies
+foreach ($file in $files) {
+    
+    # Get file name without xml extension
+    $zipFileName = (Get-Item $file).BaseName
+    # Get dir name for each file and append file name without extension
+    $combinedPath = $file.DirectoryName+'\'+$zipFileName
+    # Create individual zip file for each xml 
+    $compress = @{
+    Path = $file
+    CompressionLevel = "Fastest"
+    DestinationPath = $combinedPath+'.zip'
+    }
+
+    Compress-Archive @compress
+
+}

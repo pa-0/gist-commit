@@ -1,0 +1,1 @@
+$o="c:\b.jpg";$b="http://www.bing.com";irm "$b/$((irm "$b/HPImageArchive.aspx?format=js&idx=0&n=1").images.url)" -O $o; ii $o

@@ -1,0 +1,11 @@
+code ~/.bashrc
+
+commands 
+=============================
+alias nr="npm run"
+alias s='npm start'
+alias d='npm run dev'
+alias t='npm test'
+alias sp='npm run start:prod'
+alias sd='npm run start:dev'
+alias code.bashrc='code ~/.bashrc'

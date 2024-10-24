@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# AUTHOR: gotbletu (@gmail|twitter|youtube|github|lbry)
+
+helpmsg() {
+  printf "%s\n" "desc: convert images to webp at 50% quality and create cbz (comicbook archive)"
+  printf "%s\n" "depend: imagemagick zip coreutils libwebp"
+  printf "\n"
+  printf "%s\n" "usage: ${0##*/} <image>"
+  printf "\n"
+  printf "%s\n" "  $ ${0##*/} *.png"
+  printf "%s\n" "  $ ${0##*/} *.jpg"
+  printf "%s\n" "  $ ${0##*/} *"
+}
+if [ $# -lt 1 ]; then
+  helpmsg
+  exit 1
+elif [ "$1" = -h ] || [ "$1" = --help ]; then
+  helpmsg
+  exit 0
+else
+myArray=( "$@" )
+DIR="$(basename "$PWD")"
+mkdir -vp "$DIR"
+for arg in "${myArray[@]}"; do
+     convert -quality 50 "$arg" "$DIR/${arg%.*}.webp"
+     # cwebp -quiet -q 50 -mt "$arg" -o "$DIR/${arg%.*}.webp"
+  done
+  zip -r "${DIR}.cbz" "$DIR"
+fi
+
+# imagemagick external requirements
+# convert -list delegate
+
+# https://unix.stackexchange.com/a/602196/430298
+# https://comicbookplus.com/forum/?topic=18332.0
+# http://tomeko.net/software/CbxConverter/index.php?lang=en
+# https://resource.dopus.com/t/comic-book-cbx-to-cbx-convert-resize-v1-50/24719
+# https://developers.google.com/speed/webp/docs/cwebp
+
+# Note: resizing image resolution causes blur, not sharp like the OG, so avoid doing it until we fine a better way
+# myArray=( "$@" )
+# DIR="$(basename "$PWD")"
+# mkdir -vp "$DIR"
+# for arg in "${myArray[@]}"; do
+  # width="$(identify -format '%w' "$arg")" # 1920
+  # height="$(identify -format '%h' "$arg")" # 1080
+  # if [[ "$height" -gt 1080 ]]; then
+     # convert -quality 50 -resize x1080 "$arg" "$DIR/${arg%.*}.webp"
+     # convert -quality 50 -geometry x1080 "$arg" "$DIR/${arg%.*}.webp"
+     # cwebp -q 75 -resize 0 1080 -mt "$arg" -o "$DIR/${arg%.*}".webp
+  # elif [[ "$width" -gt 1920 ]]; then
+     # convert -quality 50 -resize 1920x "$arg" "$DIR/${arg%.*}.webp"
+     # convert -quality 50 -geometry 1920x "$arg" "$DIR/${arg%.*}.webp"
+     # cwebp -q 75 -resize 1920 0 -mt "$arg" -o "$DIR/${arg%.*}".webp
+  # else
+     # convert -quality 75 "$arg" "$DIR/${arg%.*}.webp"
+     # cwebp -q 75 -mt "$arg" -o "$DIR/${arg%.*}".webp
+  # fi
+  # done
+#   zip -r "${DIR}.cbz" "$DIR"
+# fi

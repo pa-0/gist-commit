@@ -1,0 +1,125 @@
+## VIM ##
+:grep -Rn TODO . "grep through all TODOs and open first occurence
+:cn "switch to next occurence of TODO
+:cp "switch to previous occurence of TODO
+:make|!./%< "compile and execute programm  
+:vsplit | ctrl+w+v "split verticaly  
+:split | ctrl+w+s "split horizontaly  
+ctrl+w+J,r,L "switch splits  
+:so $MYVIMRC "reload .vimrc  
+:so % "if editing    
+:terminal "start terminal in vim  
+:vertical terminal "start terminal in vertical split  
+:term ./%< "run sourcecode in terminal  
+:%s/foo/bar/g "substitute  
+:ls "list buffers  
+:buffers "list buffers  
+:b "switch to buffer  
+:bnext "switch to buffer   
+:bprevious "switch to buffer   
+:buffer <number> "switch to buffer   
+:buffer <tab> "switch to buffer   
+ctrl-w s ctrl-w T "buffers to tabs     
+:tab ba "buffers to tabs   
+:bufdo tab split "buffers to tabs 
+gt "switch tabs  
+:w !sudo tee % "write to read only
+:E rename files inside vim
+:set invlist #invisible characters in vim 
+%s/ /^M/g #replace space with newline in vim (^M is Control-V Enter)
+C-v I# ESC #comment block
+C-o #paste in insert mode
+:Ex[plore] #open current file's directory in vim
+:noh #unhighlight search in vim 
+:term # ctrl-w N terminal scrollback buffer!
+vim -c ':term ++curwin' #start vim as terminal in full screen
+
+## VIM INSERT IN VSCODE AND PYCHARM ##
+# Ctrl-o h  move cursor left 
+# Ctrl-o l  move cursor right
+# Ctrl-o j  move cursor down
+# Ctrl-o k  move cursor up
+# Ctrl-h backspace/delete
+# Ctrl-o x delete
+# Ctrl-o R replace mode
+# Ctrl-c or Esc exit replace mode
+# Ctrl-t indent
+# Ctrl-d unindent
+
+# VIM NORMAL IN VSCODE
+# f find forward, also works with df
+# F find backward, also works with dF
+# Ctrl-o, Ctrl-i jumplist (Ctrl-i brings you back)
+# Ctrl-/ to quickly comment/uncomment in vscode
+
+## VSCODE ##
+# %% to create a notebook like cell in a python file in vscode, create new cell with Shift+Enter
+# ctrl-1 focus editor
+# ctrl=w j focus terminal (vim keybindings)
+# "justMyCode": false, to step into external modules
+# "cwd": "${fileDirname}", run debugger in directory of script
+# "stopOnEntry": true, break at entry point of script
+# Ctrl+Shift+P toggleVim temporaly disable Vim keybindings
+# Ctrl+Shift+V render markdown, double click to switch back. disable vim keybindings first
+# Ctrl+K V view rendered markdown side by side 
+
+## PYCHARM ##
+Alt+4 # Focus Run window
+Ctrl-0 (mapped) # Run File
+Alt-= (mapped) # Focus Terminal
+Alt-Shift-E # execute curent line in terminal
+Ctrl+TAB # Focus and switch through open files...
+
+## EMACS ##
+C-s #incremental search  
+C-g #quit menu  
+C-x b #switch buffer  
+q #quit undo-tree  
+C-x C-b #list buffers  
+C-x 1 #close windows except cursor  
+TAB #select from completion  
+C-TAB #view list of M-x commands  
+C-x k #kill buffer 
+C-x o #switch to other window of buffers  
+M-b #vims *, beginning of word  
+C-s C-w #select word  
+C-w #further selection of word if underscore   
+C-s # ...  
+
+## BASH ## 
+ctrl-r #search history
+ctrl-r #cycle
+ctrl-g  #quit search
+
+arrow up/down #zoom in feh 
+ctrl+arrow up/down #pan in feh
+
+#screen
+^a |  #split verticaly in screen
+^a TAB #switch region screen
+^a c #create session screen
+^a " #choose session screen
+^a X #close region screen 
+^a Q #close all regions beside actual one screen
+^a [ #scroll buffer (vim style navigation) screen
+^ l #clearscreen (cmd-k clears every region) screen
+
+^b :set -g status off #disable statusbar in tmux
+
+## MAC OS ##
+cmd shift . #show hidden files in open dialog
+
+NVAC (MCP79/MCP7A) #codename graphic card for nouveau driver 
+
+## Windows ## 
+# starting/switching windows with Win-<num> in the order pinned to your taskbar
+# Win-` to open quake mode windows terminal
+# Delete windows installed keyboard:
+# https://superuser.com/questions/957552/how-to-delete-a-keyboard-layout-in-windows-10
+# use US international keyboard for umlauts:
+# " is dead key, use for ä,ü,ö,Ä,Ü,Ö, 
+# right Alt-s for ß and right Alt-5 for €
+# Disable Zone Identifier
+# gpedit.msc User Configuration/Administrative Templates/Windows Components/Attachment Manager
+# "Do not preserve zone information in file attachments",  Enabled
+# cmd-shift-` to switch between app-windows (german keyboard)

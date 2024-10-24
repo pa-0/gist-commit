@@ -1,0 +1,23 @@
+function Invoke-CommandCount {
+    param($targetDirectory)
+
+    if(!$global:map) {
+        Get-Command | ForEach {$global:map=@{}}{$global:map.($_.name)=1}
+    }
+
+    foreach($file in (ls $targetDirectory -r *.ps1) ) {
+        $ast=[System.Management.Automation.Language.Parser]::ParseFile(($file.FullName), [ref]$null, [ref]$null) 
+
+        foreach($item in $ast.FindAll({$args[0] -is [System.Management.Automation.Language.CommandAst]},$true).CommandElements) {
+            if($item.value) {
+                if($map.($item.value)) {
+                    [PSCustomObject][Ordered]@{
+                        Name=$item.value
+                        FileName=$file.Name
+                        FullName=$file.FullName
+                    }
+                }
+            }
+        }
+    }
+}

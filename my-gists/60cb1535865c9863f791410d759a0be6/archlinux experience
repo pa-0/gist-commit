@@ -1,0 +1,30 @@
+/var/log/pacman.log
+
+sudo pacman -Syu --noconfirm #Update and upgrade  all packages on the system
+pacman -Sc #Clean package cache
+
+sudo pacman -Syy #Update package list
+pacman -Qe #List explictly-installed packages
+pacman -Qdt #List unneeded packages
+pacman -Rns $(pacman -Qdtq) #Uninstall unneeded packages
+
+pactree ansible # pkg depends on
+pactree -r ansible # What depends on pkg
+
+pacman -Si ansible #Show extensive info about a package
+
+pacman -S --noconfirm ansible #Install a package
+sudo pacman -Syu ansible #Install (and update package list)
+
+pacman -Ql ansible #List files installed by ansible package
+pacman -Qii ansible
+pacman -Qii ansible
+sudo pacman -Qs ansible #Find available local packages
+
+
+
+pacman -Ss ansible #Search for packages
+
+pacman -R lsof #Remove only a package
+pacman -Rs lsof #Remove a package and its dependencies not used by other packages
+pacman -Rsc 

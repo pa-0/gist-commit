@@ -1,0 +1,2 @@
+set selFolder="C:/Users/langh/Desktop"
+youtube-dl -ci  --sub-format ass/srt/best --write-auto-sub -f "bestvideo[ext=mp4]+bestaudio[ext=mp3]/best[height<=?480]" --merge-output-format mp4 --output "%selFolder%/`%(uploader)s - `%(title)s (`%(id)s).`%(ext)s" https://www.youtube.com/watch?v=uP35iBYjVes

@@ -1,0 +1,1816 @@
+/*
+required Gdip.ahk
+*/
+;
+
+#SingleInstance Force	
+#MaxThreads
+#Persistent
+#Include, Gdip.ahk
+#Include, proc.ahk
+
+setwindelay, -1
+Process Priority,,R
+SetBatchLines -1
+cr_ACTIVE_MARKER()
+pt:=object()
+Menu, tray, NoStandard
+Menu, tray, add, About, About
+Menu, tray, add, exit, exit 
+Menu, tray, add, settings, sett_ini  ; Creates a new menu item.
+messages:=object()
+messages["rus","WSP2"]:="укажите 1-ый угол окна и нажмите CTRL, ЛКМ; или Esc"
+messages["rus","WSP1"]:="укажите 2-ой угол окна  и нажмите CTRL, ЛКМ; или Esc"
+messages["rus","SettDo_scredr2"]:="попытка убрать артефакты (если есть)"
+messages["rus","SettAon"]:="активация при наведении (иначе при нажантии)"
+messages["rus","SettSwitch_on_TB"]:="скрывать/показывать миниаюры при наведении мыши на панель задач в режиме активации при нажатии"
+messages["rus","SettPause"]:="ожидание перед скрытием/показом"
+messages["rus","About"]:="Эта программа предназначена для завата власти над миром агентами госдепа!!!"
+messages["rus","ACTONCLICK"]:="активация окна при нажатии кнопки мыши"
+messages["rus","ACTONMouseOn"]:="актиация окна при наведении мыши"
+
+messages["eng","WSP2"]:="specify 1-st corner of window by pressing CTRL, left mouse; or Esc"
+messages["eng","WSP1"]:="specify 2-nd corner of window by pressing CTRL, left mouse; or Esc"
+messages["eng","SettDo_scredr2"]:="try to fix something"
+messages["eng","SettAon"]:="activate window on cursor above thumbnail (else activate window on click thumbnail)"
+messages["eng","SettSwitch_on_TB"]:="show/hide thubnails if cursor above taskbar in mode 'activate window on cursor above thumbnail'"
+messages["eng","SettPause"]:="pause before show/hide thumbnails"
+messages["eng","About"]:=":)"
+messages["eng","ACTONCLICK"]:="activate window on click"
+messages["eng","ACTONMouseOn"]:="activate window on cursor above thumbnail"
+
+
+WINAFTERMINALLSTATE:=object()
+WINGEOM:=object()
+TVSt:=True
+WINSETPOST:=0
+;lst
+RESTORABLE_WINDOWS:=object()
+
+props:=file_to_arr("settings.ini")
+if not (props.haskey("lang"))
+	{
+	props["lang"]:="eng"
+	gui, SeLL:new
+	Gui, SeLL:Add, text,, Select language:
+	Gui, SeLL:Add, ListBox, vListbox
+	GuiControl, SeLL:, Listbox, eng|rus
+	
+	Gui, SeLL:show,,Lauguage selection
+	Gui, SeLL:+hwndhSell
+	GuiControl, SeLL:Choose, Listbox, 1
+	
+	WinWaitclose ahk_id %hSell%
+	Gui, SeLL:Submit, NoHide
+	props["lang"]:=Listbox
+	gui, SeLL:destroy
+	msgbox to reset this choose delete file 'settings.ini'
+	
+	}
+UNWATCHED_USER_PROCESSES:=file_to_arr("UUP.list")
+UNWATCHED_USER_CLASSES:=file_to_arr("UUC.list")
+;UNWATCHED_USER_CLASSES["IPTip_AutoHide_Window"]:=1
+UNWATCHED_USER_CLASSES["AutoHotkeyGUI"]:=1
+UNWATCHED_USER_CLASSES["tooltips_class32"]:=1
+
+UNWATCHED_USER_PROCS:=object()
+UNWATCHED_USER_PROCS["ccc.exe"]:=1
+
+ACTWINTRANS:="OFF"
+THUMBSIZES:=object()
+wait_im_update:=object()
+KeyST:=object()
+ini_arr(cur_winds)
+ini_arr(prev_winds)
+ini_arr(THUMB_DATA)
+dbl_click_timer_wait:=false
+WS_EX_CONTROLPARENT =0x10000
+WS_EX_DLGMODALFRAME =0x1
+WS_CLIPCHILDREN =0x2000000
+WS_EX_APPWINDOW =0x40000
+WS_EX_TOOLWINDOW =0x80
+WS_DISABLED =0x8000000
+WS_VSCROLL =0x200000
+WS_POPUP =0x80000000
+WS_VISIBLE = 0x10000000
+
+EMPTY_TITLE:=""
+BORD:=10
+UNWATCHED_TITLES:=object()
+a=Меню "Пуск"
+UNWATCHED_TITLES[a]:=1
+a=Пуск
+UNWATCHED_TITLES[a]:=1
+
+UNWATCHED_PROCS:=object()
+UNWATCHED_PROCS["ccc.exe"]:=1
+
+UNWATCHED_CLASSES:=object()
+UNWATCHED_CLASSES["Progman"]:=1
+;UNWATCHED_CLASSES["MS-SDib"]:=1
+;UNWATCHED_CLASSES["AutoHotkeyGui"]:=1
+UNWATCHED_CLASSES["tooltips_class32"]:=1
+UNWATCHED_CLASSES["Button"]:=1
+UNWATCHED_CLASSES["Shell_TrayWnd"]:=1
+UNWATCHED_CLASSES["DV2ControlHost"]:=1
+UNWATCHED_CLASSES["BasicWindow"]:=1
+UNWATCHED_CLASSES["SideBar_HTMLHostWindow"]:=1
+UNWATCHED_CLASSES["#32770"]:=1
+UNWATCHED_CLASSES["IPTip_AutoHide_Window"]:=1
+UNWATCHED_CLASSES["SysShadow"]:=1
+UNWATCHED_CLASSES["Static"]:=1
+UNWATCHED_CLASSES["OnScreen Display Window"]:=1
+UNWATCHED_CLASSES["Desktop User Picture"]:=1
+UNWATCHED_CLASSES["UIHubMouseHiderWindowClass"]:=1
+UNWATCHED_CLASSES["TaskSwitcherWnd"]:=1
+
+HiddenthumbnailShow:=1
+CATHCH_ALL_WIND:=1
+default_val(props,"ACTIVATE_ON_MOUSE_ON",0)
+default_val(props,"wait1",0)
+;default_val(props,"THUMB_WIDTH",round(A_ScreenWidth/8,0))
+props["THUMB_WIDTH"]:= round(A_ScreenWidth/10,0)
+if A_OSVersion in WIN_XP 
+{
+default_val(props,"do_scredr",true)
+default_val(props,"do_scredr2",false)
+}
+else
+{
+default_val(props,"do_scredr",false)
+default_val(props,"do_scredr2",false)
+}
+default_val(props,"switch_on_TB_if_ActOnCl",false)
+
+CoordMode Mouse, Screen ; absolute coordinates
+SysGet MonitorLimit, Monitor
+
+
+calc_THUMB_HEIGHT(props["THUMB_WIDTH"])
+
+calc_act_bord()
+
+
+pToken := Gdip_Startup()
+
+onexit exit
+
+
+
+WinExist("ahk_class Shell_TrayWnd")
+Control, hide,, MSTaskListWClass1
+Control, hide,, MSTaskSwWClass1
+;Control, hide,, ReBarWindow321
+Control, hide,, TrayShowDesktopButtonWClass1
+arr_wind:=get_all_winds()
+for n,id in arr_wind
+	{
+	WinGetClass, Class, ahk_id %id%
+		If (Class="Progman")
+		{
+		arr_wind:=object()
+		arr_wind.insert(id)
+		if (TVSt_pr<>TVSt)
+			{
+			if (TVSt=true)
+				{
+				TVStCh:=1
+				}
+			else
+				{
+				TVStCh:=-1
+				}
+			}
+		else
+			{
+			TVStCh:=0
+			}
+		gosub first_wind
+		}
+	}
+
+SetTimer , wacth_wind_appearance, 100
+SetTimer , wacth_mouse, 1
+settimer, upd_image_wait, 100
+do_scredr2:=props["do_scredr"]
+
+scredr()
+sleep 3000
+do_scredr2:=props["do_scredr2"]
+return
+-------------------------------------
+default_val(arr,key,val)
+{
+if not (arr.haskey(key))
+	{
+	arr[key]:=val
+	}
+}
+------------------------------------------------------------------------------------------
+dbl_click_timer:
+dbl_click_timer_wait:=false
+return
+------------------------------------------------------------------------------------------
+About:
+Gui, About:New
+Gui, About:Add, text,, % messages[props["lang"],"About"]
+Gui About:Show 
+
+return
+scredr()
+{
+global hredr,do_scredr2
+if A_OSVersion in WIN_XP  ; Note: No spaces around commas.
+	{
+	if (do_scredr2=true)
+		{
+		Gui, Redra:New
+		Gui Redra:+ToolWindow +hwndHRedr ; -Caption +AlwaysOnTop +0x40000 -0xC00000 
+		Gui Redra:Show ,x0 y0 w3000 h2000 NoActivate 
+		Gui Redra:Hide
+		}
+	}
+}
+cr_ACTIVE_MARKER()
+{
+global ACTIVE_MARKER
+Gui, AM:New
+Gui AM:+ToolWindow +hwndACTIVE_MARKER +AlwaysOnTop -Caption +0x40000 ; +0x00000020 ; -0xC00000
+COLOR:= 0x0000FF
+Gui, AM: Color, % COLOR
+
+
+
+Gui AM:Show ,x-100 y-100 w0 h0 NoActivate 
+WinSet, ExStyle, +0x00000020,ahk_id %ACTIVE_MARKER%
+WinSet, Transparent, % 140,ahk_id %ACTIVE_MARKER%
+
+		;Gui AM:Hide
+		
+}
+------------------------------------------------------------------------------------------
+sett_ini:
+
+global props,SettDo_scredr2,SettAon,SettPause
+Gui, Sett:New
+Gui, Sett:+LabelSett_On
+Gui, Sett:Add, Checkbox, vSettDo_scredr2, % messages[props["lang"],"SettDo_scredr2"] 
+Gui, Sett:Add, Checkbox, vSettAon, % messages[props["lang"],"SettAon"]
+Gui, Sett:Add, Checkbox, vSettSwitch_on_TB, % messages[props["lang"],"SettSwitch_on_TB"]
+Gui, Sett:Add, text,, % messages[props["lang"],"SettPause"]
+Gui, Sett:Add, edit, w40 vSettPause, % props["wait1"]
+GuiControl, Sett:,SettDo_scredr2, % do_scredr2
+GuiControl, Sett:,SettAon, % props["ACTIVATE_ON_MOUSE_ON"]
+GuiControl, Sett:,SettSwitch_on_TB, % props["switch_on_TB_if_ActOnCl"]
+Gui, Sett:Submit, NoHide
+Gui Sett:Show , ,Settings
+return
+------------------------------------------------------------------------------------------
+Sett_OnClose:
+Gui, Sett:Submit, NoHide
+if (Settdo_scredr2=1)
+	do_scredr2:=true
+	else
+	do_scredr2:=false
+props["do_scredr2"]:=do_scredr2
+props["ACTIVATE_ON_MOUSE_ON"]:=SettAon
+props["wait1"]:=SettPause
+props["switch_on_TB_if_ActOnCl"]:=SettSwitch_on_TB
+Gui Sett:hide
+calc_act_bord()
+return
+------------------------------------------------------------------------------------------
+wacth_mouse:
+
+px:=x
+py:=y
+MouseGetPos x, y,wind,contr
+updkeyst()
+if (WINSETPOST=False)
+	{
+	if haskeykey(THUMB_DATA,"_" . wind,"Root")
+		{
+		root_win_:=THUMB_DATA["_" . wind,"Root"]
+		WinGetPos,tx,ty,tw,th,ahk_id %wind%
+		;tooltip % winfullinfo(THUMB_DATA["_" . root_win_,"thumbnailcreatable_win"])
+		tooltip % gwt(root_win_)
+		if (MOVE_ST=False) and (RES_ST=False)
+			{
+			if (KeyST["lButton","Ch"]="D")
+				{
+				
+				if (x<tx-bord) or (y<ty-bord) or (x>tx+tw-bord) or (y>ty+th-bord)
+					{
+					RES_ST:=True
+					}
+					else
+					{
+					if (props["ACTIVATE_ON_MOUSE_ON"]=0)
+						{
+						if !(dbl_click_timer_wait)
+							{
+							px:=x
+							py:=y
+							MOVE_ST:=True
+							MOVE_win:=wind
+							dbl_click_timer_wait:=true
+							SetTimer , dbl_click_timer, 300
+							}
+						else
+							{
+
+								if (MOVE_ST=False) and (RES_ST=False)
+									{
+									;window_activate(root_win_)
+									}
+								
+								tvst:=false
+
+							}
+						}
+						else
+						{
+						tvst:=false
+						}
+					}
+					
+				}
+			if (KeyST["Alt","Ch"]="D")
+				{
+				switch_AON()
+				}
+			}
+		if (KeyST["RCtrl","Ch"]="D" or KeyST["LCtrl","Ch"]="D" or KeyST["RButton","Ch"]="D")
+			{
+			WINSETPOST:=1
+			GEST_ST:=0
+			MOVE_ST:=False
+			RES_ST:=False
+			MOVE_win2:=THUMB_DATA["_" . root_win_,"thumbnailcreatable_win"]
+			tvst:=false
+			Gui, blank:New
+			Gui blank:+Toolwindow -Caption +hwndhBlank +AlwaysOnTop
+			COLOR:= 0x800000
+			Gui, blank: Color, % COLOR
+			
+			;WinSet, ExStyle, +0x00000020, % "ahk_id " . hBlank
+			Gui, blank:Show, x0 y0 w%A_Screenwidth% h%A_Screenheight% ; NoActivate
+			WinSet, Transparent, % 50, ahk_id %hBlank%
+			}
+		if (KeyST["Delete","Ch"]="D")
+			{
+			WinClose ahk_id %root_win_%
+			}
+		if (props["ACTIVATE_ON_MOUSE_ON"]=1)
+			{
+			if (MOVE_ST=False) and (RES_ST=False)
+				{
+				window_activate(root_win_)
+				}
+			}
+		if (th<>thumb_height)
+			{
+			winmove,ahk_id %wind%,,,,,thumb_height
+			}
+		if (tw<>thumb_width)
+			{
+			winmove,ahk_id %wind%,,,,thumb_width
+			}	
+		}
+		else
+		{
+		tooltip
+		if  (props["ACTIVATE_ON_MOUSE_ON"]=1) or ((props["ACTIVATE_ON_MOUSE_ON"]=0) and (props["switch_on_TB_if_ActOnCl"]=false))
+			{
+			
+			if (MOVE_ST=False) and (RES_ST=False)
+				{
+				if (gwc(wind)="Shell_TrayWnd")
+					{
+					if (contr="ReBarWindow321")
+						{
+						if (GEST_ST=0)
+							{
+							if (KeyST["lButton","Ch"]="D")
+								{
+								GEST_ST:=1
+								gestart_x:=x
+								gestart_y:=y
+								
+								}
+							}
+						}
+					}
+				}
+			
+			if (GEST_ST=1) 
+				{
+				if (TASK_BAR_WIDTH=A_ScreenWidth)
+					{
+					dist:=abs(gestart_x-x)
+					}
+					else
+					{
+					dist:=abs(gestart_y-y)
+					}
+				if (dist>15)
+					{
+					GEST_ST:=-1
+					gosub toggle_ShowHide
+					}
+				}
+			}
+		}
+
+	critical
+	if (KeyST["lButton","C"]="U")
+		{
+		if (KeyST["lButton","Ch"]="U")
+			{
+			upd_pos(MOVE_win)
+			mark_actwin(MOVE_win)
+			}
+		GEST_ST:=0
+		MOVE_ST:=False
+		RES_ST:=False
+		MOVE_win=
+		}
+
+	if (MOVE_ST)
+		{
+		dx:=x-px
+		dy:=y-py
+		if (dx<>0) or (dy<>0)
+			{
+			WinGetPos,wx,wy,,,ahk_id %MOVE_win%
+			winmove,ahk_id %MOVE_win%,,wx+dx,wy+dy
+			mark_actwin(MOVE_win)
+			}
+		}
+	}
+else
+	{
+	WinGetPos,nx,ny,nw,nh,ahk_class Shell_TrayWnd
+	minmax_(nx,ny,nw,nh, nmin, nmax)
+	if (KeyST["Esc","Ch"]="D" or KeyST["RButton","Ch"]="D")
+		{
+		WINSETPOST:=0
+		window_activate2(MOVE_win2,true)
+		Gui, blank:hide
+		}
+	if (WINSETPOST=2)
+		{
+		tooltip % messages[props["lang"],"WSP1"]
+		
+		p2x:=x
+		p2y:=y
+		pt[0]:=p2x
+		pt[1]:=p2y
+		if (is_inside_BB_2d_pt(nmin, nmax,pt))
+			{
+			cr_TB_pt(p2x,p2y)
+			}
+		if (p1x<p2x)
+				{
+				sp2x:=p2x
+				sp1x:=p1x
+				}
+				else
+				{
+				sp2x:=p1x
+				sp1x:=p2x
+				}
+			if (p1y<p2y)
+				{
+				sp2y:=p2y
+				sp1y:=p1y
+				}
+				else
+				{
+				sp2y:=p1y
+				sp1y:=p2y
+				}
+				
+		winmove,ahk_id %MOVE_win2%,,sp1x,sp1y,sp2x-sp1x,sp2y-sp1y
+		if (KeyST["RCtrl","Ch"]="D" or KeyST["LCtrl","Ch"]="D" or KeyST["lButton","Ch"]="D")
+			{
+			WINSETPOST:=0
+			WinSet, AlwaysOnTop,Off, ahk_id %MOVE_win2% 
+			window_activate2(MOVE_win2,true)
+			Gui, blank:hide
+			}
+		}
+		if (WINSETPOST=1)
+		{
+		tooltip % messages[props["lang"],"WSP2"]
+		if (KeyST["RCtrl","Ch"]="D" or KeyST["LCtrl","Ch"]="D" or KeyST["lButton","Ch"]="D")
+			{
+			p1x:=x
+			p1y:=y
+			WINSETPOST:=2
+			pt[0]:=p1x
+			pt[1]:=p1y
+			if (is_inside_BB_2d_pt(nmin, nmax,pt))
+				{
+				cr_TB_pt(p1x,p1y)
+				}
+			if (WinGetMinMaxState(MOVE_win2)=1)
+				{
+				WinRestore, ahk_id %MOVE_win2%
+				
+				}
+			;Gui blank:-AlwaysOnTop
+			WinSet, AlwaysOnTop,On, ahk_id %MOVE_win2% 
+			;window_activate2(MOVE_win2,true)
+			
+				
+			}
+		}
+	}
+critical, off
+;---------------------------------------------
+if (WINSETPOST=0)
+	{
+	if (y>ACT_LIM_BOTT)
+		{
+		ON_BOTT_Act:=true
+		}
+	else
+		{
+		ON_BOTT_Act:=False
+		}
+	if 	(ON_BOTT_Act_pr<>ON_BOTT_Act)
+		{
+		if (ON_BOTT_Act=true)
+			{
+			SetTimer , wait_mouse_act, % props["wait1"]
+			}
+		ON_BOTT_Act_pr:=ON_BOTT_Act
+		}
+	;------------------------------------------
+	if (y<ACT_LIM_TOP) and (x<A_screenwidth-60)
+		{
+		ON_TOP_Act:=true
+		}
+	else
+		{
+		ON_TOP_Act:=False
+		}
+	if 	(ON_TOP_Act_pr<>ON_TOP_Act)
+		{
+		if (ON_TOP_Act=true)
+			{
+			tvst:=false
+			}
+		ON_TOP_Act_pr:=ON_TOP_Act
+		}
+	}
+WatchWindNThSw()
+return
+
+cr_TB_pt(byref p2x,byref p2y)
+{
+global TASK_BAR_HEIGHT,TASK_BAR_width,TBY
+if (TASK_BAR_HEIGHT<>a_screenheight)
+				{
+				if (TBY<>0)
+					{
+					;lower
+					p2y:=a_screenheight-TASK_BAR_HEIGHT
+					}
+					else
+					{
+					;upper
+					p2y:=TASK_BAR_HEIGHT
+					}
+				}
+				else
+				{
+				if (TBX<>0)
+					{
+					;right
+					p2x:=a_screenwidth-TASK_BAR_width
+					}
+					else
+					{
+					;left
+					p2x:=TASK_BAR_width
+					
+					}
+				}
+}
+updkeyst()
+{
+updkeystch("lButton")
+updkeystch("Alt")
+updkeystch("RButton")
+updkeystch("Delete")
+updkeystch("RCtrl")
+updkeystch("LCtrl")
+updkeystch("Esc")
+}
+;!]::
+;switch_AON()
+;return
+switch_AON()
+{
+global props,messages
+props["ACTIVATE_ON_MOUSE_ON"]:=rev_01(props["ACTIVATE_ON_MOUSE_ON"])
+if (props["ACTIVATE_ON_MOUSE_ON"]=0)
+	{
+	aon:=messages[props["lang"],"ACTONCLICK"]
+	}
+	else
+	{
+	aon:=messages[props["lang"],"ACTONMouseOn"]
+	}
+calc_act_bord()
+msgbox %aon%
+}
+
+wait_mouse_act:
+SetTimer , wait_mouse_act, off
+if (ON_BOTT_Act=true)
+	gosub toggle_ShowHide
+return
+------------------------------------------------------------------------------------------
+minmax_(mx,my,mw,mh,byref mmin,byref mmax)
+{
+mmin:=object()
+mmax:=object()
+mmin[0]:=mx
+mmin[1]:=my
+mmax[0]:=mx+mw
+mmax[1]:=my+mh
+}
+------------------------------------------------------------------------------------------
+upd_pos(thmb)
+{ 
+if (thmb="")
+	return
+
+global THUMB_DATA,TASK_BAR_HEIGH2T,THUMB_HEIGHT,THUMB_WIDTH,THUMBSIZES
+dy:=-round((((A_ScreenHeight-TASK_BAR_HEIGH2T)/(THUMB_HEIGHT+1)),0)*(THUMB_HEIGHT+1))+(A_ScreenHeight-TASK_BAR_HEIGH2T)+round((A_ScreenHeight-TASK_BAR_HEIGH2T)/(THUMB_HEIGHT+1),0)
+root_wind:=THUMB_DATA["_" . thmb,"Root"]
+agn:
+WinGetPos,mx,my,mw,mh,ahk_id %thmb%
+nx:=round((mx/(THUMB_WIDTH+1))-0.25,0)*(THUMB_WIDTH+1)+1
+ny:=round(((my+dy)/(THUMB_HEIGHT+1))-0.25,0)*(THUMB_HEIGHT+1)+1-dy
+
+if (nx<>mx) or (my<>ny)
+	{
+	winmove,ahk_id %thmb%,,nx,ny
+	mx:=nx
+	my:=ny
+	;msgbox % THUMB_HEIGHT . " " . TASK_BAR_HEIGH2T
+	
+	}
+if (THUMBSIZES["_" . root_wind,"w"]<>mw) or (THUMBSIZES["_" . root_wind,"h"]<>mh)
+	{
+	;msgbox %mh%
+	mh:=round(mh,0)
+	mw:=round(mw,0)
+	;msgbox %mw%
+	winmove,ahk_id %thmb%,,mx,my,mw,mh
+	upd_image(THUMB_DATA["_" . root_wind,"Root"])
+	THUMBSIZES["_" . root_wind,"w"]:=mw
+	THUMBSIZES["_" . root_wind,"h"]:=mh
+	goto agn
+	}
+
+minmax_(mx,my,mw,mh, mmin, mmax)
+if (mmax[0]>A_ScreenWidth)
+{
+winmove,ahk_id %thmb%,,0,mmin[1]-mh-1
+;msgbox rtg
+goto agn
+}
+
+if (mmin[0]<0)
+{
+winmove,ahk_id %thmb%,,1
+;msgbox % "left " . thmb
+goto agn
+}
+if (mmax[1]>A_ScreenHeight -TASK_BAR_HEIGH2T)
+{
+winmove,ahk_id %thmb%,,,A_ScreenHeight-TASK_BAR_HEIGH2T - mh -1
+;msgbox % mmax[1] . " bottom " . A_ScreenHeight-TASK_BAR_HEIGH2T
+goto agn
+}
+
+for _win,val in THUMB_DATA
+	{
+	;msgbox % _win
+	if haskeykey(THUMB_DATA,_win,"Root")
+		{
+		win:=striml(_win,1)
+		if (thmb<>win)
+			{
+			WinGetPos,nx,ny,nw,nh,ahk_id %win%
+			minmax_(nx,ny,nw,nh, nmin, nmax)
+			
+			if (is_inside_BB_2d(mmin, mmax,nmin, nmax))
+				{
+				
+				winmove,ahk_id %thmb%,,nmax[0]+1
+				;msgbox coll
+				goto agn
+				}
+			}
+		}
+	}
+	;msgbox end_posupd
+THUMBSIZES["_" . root_wind,"w"]:=mw
+THUMBSIZES["_" . root_wind,"h"]:=mh
+THUMBSIZES["_" . root_wind,"x"]:=mx
+THUMBSIZES["_" . root_wind,"y"]:=my
+;msgbox pos %thmb%
+}
+------------------------------------------------------------------------------------------
+window_activate(win,anyway:=false,passive:=false)
+{
+global props
+if (props["ACTIVATE_ON_MOUSE_ON"]=1)
+	{
+	window_activate2(win,anyway)
+	}
+}
+------------------------------------------------------------------------------------------
+window_activate2(win,anyway:=false,passive:=false)
+{
+
+global activated_window,THUMB_DATA,ACTWINTRANS,TVSt,ACTIVE_MARKER
+
+THMBCR:=THUMB_DATA["_" . win,"thumbnailcreatable_win"]
+
+;msgbox %activated_window%
+WinGet, active_id, ID, A
+if (THUMB_DATA["_" . win,"Root"]<>"")
+	{
+	win:=THUMB_DATA["_" . win,"Root"]
+	}
+if (THUMB_DATA["_" . CreatedThumb,"Root"]<>"")
+	{
+	active_id:=THUMB_DATA["_" . THUMB_DATA["_" . active_id,"Root"],"thumbnailcreatable_win"]
+	}
+ONE_TCR:=False
+if (THUMB_DATA["_" . activated_window,"thumbnailcreatable_win"]<>active_id) and (activated_window<>active_id)
+	{
+	ONE_TCR:=True
+	}
+
+if (activated_window<>win) or (ONE_TCR)
+	{
+	DetectHiddenWindows, On
+	if (TVSt=true)
+		{
+		WinSet, Transparent, off, % "ahk_id " . THUMB_DATA["_" . activated_window,"Thumb"]
+		WinSet, Transparent, %ACTWINTRANS%, % "ahk_id " . THUMB_DATA["_" . win,"Thumb"]
+		mark_actwin(THUMB_DATA["_" . win,"Thumb"])
+		}
+	if (THMBCR<>THUMB_DATA["_" . activated_window,"thumbnailcreatable_win"])
+		{
+
+			winact2(win)
+		WinGettitle, ttl, ahk_id %win%
+		WinGetClass, Class, ahk_id %win%
+		
+		;If (Class<>"Progman") 
+
+			upd_image(activated_window)
+			
+		}
+	else
+		{
+
+		upd_image_w(activated_window)
+		scredr2()
+		winact2(win)
+		
+		}
+	DetectHiddenWindows, off
+	activated_window:=win 
+	upd_title(activated_window)
+	;
+	}
+}
+------------------------------------------------------------------------------------------
+mark_actwin(thumb)
+{
+global THUMB_DATA,ACTIVE_MARKER
+;Gui AM:+AlwaysOnTop
+WinSet, AlwaysOnTop,On, ahk_id %ACTIVE_MARKER% 
+wingetpos,nx,ny,nw,nh, % "ahk_id " . thumb
+winmove,ahk_id %ACTIVE_MARKER%,,nx,ny,nw,nh
+;WinSet, AlwaysOnTop,On, ahk_id %thumb% 
+}
+------------------------------------------------------------------------------------------
+winact2(win)
+{
+global THUMB_DATA
+		if not(winexist("ahk_id " . win))
+			{
+		
+			;msgbox not ex
+			return 
+			}
+		WinGettitle, ttl, ahk_id %win%
+		WinGetClass, Class, ahk_id %win%
+	If (Class="Progman")
+		{
+		;WinSet, AlwaysOnTop,On, ahk_id %win% 
+		critical
+		for _win,val in THUMB_DATA
+			{
+			if haskeykey(THUMB_DATA,_win,"Thumb")
+				{	
+				win:=striml(_win,1)
+				if (gwc(win)<>"Progman")
+					wp_SetProp(win,"WINAFTERMINALLSTATE",1)
+				}
+			}
+		WinMinimizeAll
+		critical, off
+		}
+	else
+		{
+		if !(is_restorable(win))
+			{
+			
+			DllCall("SwitchToThisWindow", "UInt", win, "UInt", 1)
+			;msgbox % gwt(win)
+			}
+		wp_SetProp(win,"WINAFTERMINALLSTATE",0)
+		winactivate, ahk_id %win%
+		if (WinGetMinMaxState(win)=-1)
+			{
+			DllCall("SwitchToThisWindow", "UInt", win, "UInt", 1)
+			}
+		}
+		
+
+}
+WatchWindNThSw()
+{
+global THUMB_DATA,activated_window,ACTWINTRANS,TVSt
+WinGet, active_id2, ID, A
+WWNroot:=get_root_win(active_id2)
+WWNroot_prew:=get_root_win(activated_window)
+
+
+
+if haskeykey(THUMB_DATA,"_" . active_id2,"Root")
+	{
+	if (THUMB_DATA["_" . active_id2,"Root"]<>activated_window) and (active_id2<>activated_window)
+	;msgbox % ">>" . THUMB_DATA["_" . active_id2,"Root"]
+	window_activate2(THUMB_DATA["_" . active_id2,"Root"])
+	;msgbox % "/<" . activated_window 
+	return
+	}
+	
+	
+	
+
+
+
+if !(haskeykey(THUMB_DATA,"_" . WWNroot,"thumbnailcreatable_win"))
+	{
+	return
+	}
+
+
+if (THUMB_DATA["_" . WWNroot_prew,"thumbnailcreatable_win"]<>THUMB_DATA["_" . WWNroot,"thumbnailcreatable_win"])
+	{
+	WinGetClass, Class, ahk_id %WWNroot_prew%
+	WinGetClass, Class2, ahk_id %WWNroot%
+	If !((Class="Progman") and ((wp_getProp(WWNroot,"WINAFTERMINALLSTATE")=1) and (WinGetMinMaxState(active_id2)=-1)))
+		{
+		Critical
+		if (TVSt=true)
+			{
+			WinSet, Transparent, off, % "ahk_id " . THUMB_DATA["_" . WWNroot_prew,"Thumb"]
+			WinSet, Transparent, %ACTWINTRANS%, % "ahk_id " . THUMB_DATA["_" . WWNroot,"Thumb"]
+			mark_actwin(THUMB_DATA["_" . WWNroot,"Thumb"])
+			}
+		;window_activate(WWNroot)
+		activated_window:=WWNroot 
+		;msgbox act
+		Critical, off
+
+		}
+		else
+		{
+		if (Class2="Progman")
+			{
+			for _win,val in THUMB_DATA
+				{
+				if haskeykey(THUMB_DATA,_win,"Thumb")
+					{	
+					win:=striml(_win,1)
+					if (gwc(win)<>"Progman")
+						wp_SetProp(win,"WINAFTERMINALLSTATE",1)
+					}
+				}			
+			;msgbox prog
+			}
+		}
+	}
+
+}
+
+updkeystch(key)
+{
+global KeyST
+KeyST[key,"P"]:=KeyST[key,"C"]
+GetKeyState,st,%key%,P
+if (st <> KeyST[key,"P"])
+	{
+	if (st="D")
+		{
+		KeyST[key,"Ch"]:="D"
+		}
+		else
+		{
+		KeyST[key,"Ch"]:="U"
+		}
+	}
+	else
+	{
+	KeyST[key,"Ch"]:=""
+	}
+KeyST[key,"C"]:=st
+}
+------------------------------------------------------------------------------------------
+rev_TrFl(var)
+{
+if (var=True)
+	var:=false
+else
+	var:=true
+return var
+}
+------------------------------------------------------------------------------------------
+rev_01(var)
+{
+if (var=1)
+	var:=0
+else
+	var:=1
+return var
+}
+------------------------------------------------------------------------------------------
+
+;!\::
+toggle_ShowHide:
+TVST:=rev_TrFl(TVST)
+return
+------------------------------------------------------------------------------------------
+
+----------------------------------------------------------
+thumb_show(thumb)
+{
+global activated_window,THUMB_DATA,ACTWINTRANS
+if (THUMB_DATA["_" . activated_window,"Thumb"]<>thumb)
+	{
+	WinSet, Transparent, OFF, ahk_id %thumb%
+	}
+	else
+	{
+	WinSet, Transparent, %ACTWINTRANS%, ahk_id %thumb%
+	mark_actwin(thumb)
+	;msgbox %ACTWINTRANS%
+	}
+WinSet, Region,, ahk_id %thumb%
+;WinSet, Redraw,, ahk_id %thumb%
+}
+----------------------------------------------------------
+thumb_hide(thumb)
+{		
+WinSet, Transparent, 0, ahk_id %thumb%
+WinSet, Region, 0-0 W0 H0, ahk_id %thumb%
+;WinSet, Redraw,, ahk_id %thumb%
+}
+----------------------------------------------------------
+
+wacth_wind_appearance:
+if (TVSt_pr<>TVSt)
+	{
+	if (TVSt=true)
+		{
+		TVStCh:=1
+		}
+	else
+		{
+		TVStCh:=-1
+		}
+	}
+else
+	{
+	TVStCh:=0
+	}
+prev_winds:=cur_winds
+cur_winds:=object()
+arr_wind:=get_all_winds()
+first_wind:
+for n,id in arr_wind
+	{
+	if (is_TBBTN_win(id))
+		{
+		if (not_hidden_by_user_or_system(id))
+			{
+			wwaroot_wind:=get_root_win(id)
+			cur_winds["_" . wwaroot_wind]:=1
+			
+			if not(haskeykey(THUMB_DATA,"_" . wwaroot_wind,"Thumb"))
+				{
+				critical
+				
+				wwathumbnailcreatable_win:=find_thumbnailcreatable_win(wwaroot_wind)
+				;crt:
+				;WinGetPos,,,wwa_wd,wwa_ht,ahk_id %wwathumbnailcreatable_win%
+				;if !(wwathumbnailcreatable_win="_") ; and ((wwa_wd>0) and (wwa_ht>0))
+
+					wp_SetProp(wwaroot_wind,"WINAFTERMINALLSTATE",0)
+				
+				create_thumbnail(wwaroot_wind,wwathumbnailcreatable_win)
+				}
+				else
+				{
+				wwathumbnailcreatable_win:=THUMB_DATA["_" . wwaroot_wind,"thumbnailcreatable_win"]
+				if (wp_getProp(wwaroot_wind,"WINAFTERMINALLSTATE")=0)
+				{
+					WinGetPos,,,wwa_wd,wwa_ht,ahk_id %wwathumbnailcreatable_win%
+					if (wwa_wd=0) or (wwa_ht=0) or (wwathumbnailcreatable_win="") or !(winexist("ahk_id " . wwathumbnailcreatable_win))
+						{
+						wwathumbnailcreatable_win2:=find_thumbnailcreatable_win(wwaroot_wind)
+						
+						if (wwathumbnailcreatable_win2<>wwathumbnailcreatable_win)
+							{
+							if (wwathumbnailcreatable_win2<>"")
+								{
+								create_thumbnail(wwaroot_wind,wwathumbnailcreatable_win2)
+								}
+							}
+						;cur_winds.remove("_" . wwaroot_wind)
+						}
+					}
+				}
+			}
+		}
+	if (TVStCh<>0)
+		{
+		
+		if (haskeykey(THUMB_DATA,"_" . wwaroot_wind, "Thumb"))
+			{
+			thumb:=THUMB_DATA["_" . wwaroot_wind, "Thumb"]
+			if (TVStCh=1)
+				{
+				thumb_show(thumb)
+				Gui a%wwaroot_wind%: +AlwaysOnTop
+				}
+				else
+				{
+				thumb_hide(thumb)
+				}
+			}
+		}
+	if (CREATED_GUI<>"")
+		{
+		;Gui CREATED_GUI: +Resize
+		CREATED_GUI:=""
+		}
+	}
+if (TVStCh<>0)
+	{
+	if (TVStCh=1)
+		{
+		;WinSet, Transparent, OFF, ahk_id %ACTIVE_MARKER%
+		WinSet, Region,, ahk_id %ACTIVE_MARKER%
+		WinSet, AlwaysOnTop,On, ahk_id %ACTIVE_MARKER%
+		}
+		else
+		{
+		;WinSet, Transparent, 0, ahk_id %ACTIVE_MARKER%
+		WinSet, Region, 0-0 W0 H0, ahk_id %ACTIVE_MARKER%
+		}
+	}
+for prev_wind,v in prev_winds
+	{
+	if not (cur_winds.haskey(prev_wind))
+		{
+		dstrw:=striml(prev_wind,1)
+		;msgbox remove rw %dstrw%, thmb %Thumb%
+		;DetectHiddenWindows, On
+		;if not(winexist(dstrw))
+		;	{
+		
+			destroy_thumbnail(dstrw)
+		;	}
+		;DetectHiddenWindows, off
+		}
+	}
+
+TVSt_pr:=TVSt
+return
+
+------------------------------------------------------------------------------------------
+exit:
+
+Gdip_Shutdown(pToken)
+WinExist("ahk_class Shell_TrayWnd")
+Control, Show,, MSTaskListWClass1
+Control, Show,, MSTaskSwWClass1
+Control, Show,, ReBarWindow321
+Control, Show,, TrayShowDesktopButtonWClass1
+arr_to_file(UNWATCHED_USER_PROCESSES,"UUP.list")
+arr_to_file(UNWATCHED_USER_CLASSES,"UUC.list")
+arr_to_file(props,"settings.ini")
+
+exitapp
+------------------------------------------------------------------------------------------
+find_thumbnailcreatable_win(win)
+{
+WinGetPos,x,y,wd,ht,ahk_id %win%
+if (wd=0) and (ht=0)
+	{
+	ini_arr(childs)
+	childs:=get_child_wins(win)
+	;return win
+	;msgbox % "inwin" . gwt(win) . "-" . childs.maxindex() . "_"
+	if  !(childs.maxindex())
+		{
+		WinGet, CPID, PID,  ahk_id %win%
+		ini_arr(wpid)
+		wpid:=get_winds_on_pid(CPID)
+		;msgbox % "on pid" . gwt(win) . "-" . wpid.maxindex()
+		if  (wpid.maxindex()<>0)
+			{
+			for a,win_on_pid in wpid
+				{
+				;msgbox % gwt(win_on_pid) . "//" . gwc(win_on_pid)
+				if (win_on_pid<>win)
+					{
+					WinGetPos,x,y,wd,ht,ahk_id %win_on_pid%
+					
+					if (wd>0) and (ht>0)
+						{
+						;msgbox % "found:" gwt(win_on_pid) . "/" . wd . " " . ht . "/" . gwc(win_on_pid)
+						return win_on_pid
+						
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+		for a,child in childs
+			{
+			WinGetPos,x,y,wd,ht,ahk_id %child%
+			if (wd>0) and (ht>0)
+				{
+				;msgbox % "found:" gwt(child) . "/" . wd . " " . ht . "/" . gwc(child)
+				return child
+				}
+			}
+		}
+	return ""
+	}
+	else
+	{
+	if not(is_restorable(win))
+		{
+			
+			WinGet, CPID, PID,  ahk_id %win%
+			wpid:=object()
+			wpid:=get_winds_on_pid(CPID)
+			;WinGetPos,x,y,wd,ht,ahk_id %win%
+			;msgbox % "inrest" . gwt(win) . " " . wpid.maxind()
+			for a,win_on_pid in wpid
+			{
+			;msgbox % gwt(win_on_pid) . "//" . gwt(win)
+			if (win_on_pid<>win)
+				{
+				if (is_restorable(win_on_pid))
+					{
+					
+					return win_on_pid
+					
+					}
+				}
+			}
+		return ""
+		}
+	return win
+	}
+	
+}
+WinGetMinMaxState(win)
+{
+WinGet MinMaxState, MinMax, ahk_id %win%
+RETURN MinMaxState
+}
+------------------------------------------------------------------------------------------
+is_restorable(win)
+{
+global RESTORABLE_WINDOWS
+
+if not(RESTORABLE_WINDOWS.haskey("_" . win))
+	{
+	RESTORABLE_WINDOWS["_" . win]:=1
+	WinGet MinMaxState, MinMax, ahk_id %win%
+	if (MinMaxState = -1)
+		{
+		WinRestore, ahk_id %win%
+		sleep, 100
+		WinGet MinMaxState, MinMax, ahk_id %win%
+		if (MinMaxState = -1)
+			{
+			DllCall("SwitchToThisWindow", "UInt", win, "UInt", 0) ; the value "0" was found by method of random selection
+			
+			WinGet MinMaxState, MinMax, ahk_id %win%
+			if (MinMaxState = -1)
+				{
+				RESTORABLE_WINDOWS["_" . win]:=-1
+				}
+			RESTORABLE_WINDOWS["_" . win]:=-1
+			}
+		}
+	}
+	;RESTORABLE_WINDOWS["_" . win]:=1
+	;msgbox % RESTORABLE_WINDOWS["_" . win]
+	if (RESTORABLE_WINDOWS["_" . win]=1)
+		{
+		return true
+		}
+	else
+		{
+		;msgbox % "unmx:" gwt(win)
+		return false
+		}
+}
+------------------------------------------------------------------------------------------
+striml(strng,c)
+{
+StringTrimLeft, a, strng, c
+return a
+}
+------------------------------------------------------------------------------------------
+is_TBBTN_win(wid)
+{
+	ex1:=0
+	ex2:=0
+global WS_EX_CONTROLPARENT, WS_EX_DLGMODALFRAME, WS_CLIPCHILDREN, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW , WS_DISABLED , WS_VSCROLL, WS_POPUP, WS_VISIBLE 
+    WinGetTitle, wid_Title, ahk_id %wid%
+    WinGet, Style, Style, ahk_id %wid%
+	WinGet, proc, ProcessName, ahk_id %wid%
+	WinGetClass, Class, ahk_id %wid%
+	If (Class="Progman")
+	{
+	return TRUE
+	}
+ If (!(wid_Title))  ; skip unimportant windows ; ! wid_Title or 
+	{
+	return FALSE
+	}
+If (Style & WS_DISABLED)  ; skip unimportant windows ; ! wid_Title or 
+	{
+	return FALSE
+	}
+    WinGet, es, ExStyle, ahk_id %wid%
+    Parent := C10_16( DllCall( "GetParent", "uint", wid ) )
+    WinGet, Style_parent, Style, ahk_id %Parent%
+    Owner := C10_16( DllCall( "GetWindow", "uint", wid , "uint", "4" ) ) ; GW_OWNER = 4
+    WinGet, Style_Owner, Style, ahk_id %Owner%
+	
+    If (((es & WS_EX_TOOLWINDOW)  and !(Parent)  and (Style & WS_VISIBLE)) ; filters out program manager, etc
+        or ( !(es & WS_EX_APPWINDOW)
+          and (((Parent) and ((Style_parent & WS_DISABLED) =0)) ; These 2 lines filter out windows that have a parent or owner window that is NOT disabled -
+            or ((Owner) and ((Style_Owner & WS_DISABLED) =0))))) ; NOTE - some windows result in blank value so must test for zero instead of using NOT operator!
+	{
+			return FALSE
+	}
+return TRUE
+}
+------------------------------------------------------------------------------------------
+wp_GetProp(hwnd, property_name, type="int") 
+{
+    return DllCall("GetProp", "uint", hwnd, "str", property_name, type)
+}
+------------------------------------------------------------------------------------------
+wp_SetProp(hwnd, property_name, data, type="int") 
+{
+return DllCall("SetProp", "uint", hwnd, "str", property_name, type, data)
+}
+------------------------------------------------------------------------------------------
+create_thumbnail(root_wind,thumbnailcreatable_win)
+{
+critical
+global THUMB_DATA,MAX_TOP,THUMB_WIDTH,THUMB_HEIGHT,CREATED_GUI,THUMBSIZES,TVST
+;msgbox %MAX_TOP% %THUMB_WIDTH% %THUMB_HEIGHT%
+Gui, a%root_wind%:New
+Gui a%root_wind%: +ToolWindow +hwndCreatedThumb +AlwaysOnTop +0x40000 -0xC00000 
+
+Gui a%root_wind%:Show , NoActivate 
+if (TVST=FALSE)
+	{
+	thumb_hide(CreatedThumb)
+	}
+Gui a%root_wind%:Add, Picture, x0 y-2 w100 h100 hwndCreatedThumbImage +0xE
+Gui a%root_wind%:Add, Picture, x0 y0 w32 h32 BackgroundTrans hwndCreatedThumbIcon +0xE
+
+;msgbox cr - %CreatedThumb%
+if (THUMBSIZES.haskey("_" . root_wind))
+{
+winmove,ahk_id %CreatedThumb%,,THUMBSIZES["_" . root_wind,"x"],THUMBSIZES["_" . root_wind,"y"],THUMBSIZES["_" . root_wind,"w"],THUMBSIZES["_" . root_wind,"h"]
+}
+else
+{
+winmove,ahk_id %CreatedThumb%,,1,MAX_TOP-1,THUMB_WIDTH,THUMB_HEIGHT
+}
+THUMB_DATA["_" . root_wind,"thumbnailcreatable_win"]:=thumbnailcreatable_win
+THUMB_DATA["_" . root_wind,"Thumb"]:=CreatedThumb
+THUMB_DATA["_" . CreatedThumb,"ThumbImage"]:=CreatedThumbImage
+THUMB_DATA["_" . CreatedThumb,"ThumbIcon"]:=CreatedThumbIcon
+THUMB_DATA["_" . CreatedThumb,"Root"]:=root_wind
+wp_SetProp(root_wind,"WINAFTERMINALLSTATE",0)
+upd_image(root_wind)
+upd_title(root_wind)
+upd_pos(CreatedThumb)
+CREATED_GUI:=a%root_wind%
+
+;msgbox %root_wind% / %CreatedThumb% 
+;	msgbox a%root_wind%
+critical, off
+}
+------------------------------------------------------------------------------------------
+upd_title(root_wind)
+{
+global WinInfoShow,THUMB_DATA
+Thumb:=THUMB_DATA["_" . root_wind,"Thumb"]
+WinGetTitle, Title, ahk_id %root_wind%
+prev_mb_title=%Title%
+WinGetTitle, rTitle, ahk_id %Thumb%
+if (rTitle<>prev_mb_title)
+	WinSetTitle,ahk_id %Thumb% ,,%prev_mb_title%
+}	
+------------------------------------------------------------------------------------------
+upd_image(root_wind)
+{
+global wait_im_update
+wait_im_update["_" . root_wind]:=6
+
+
+}
+------------------------------------------------------------------------------------------
+upd_image_wait:
+
+cc:=0
+for WW,w in wait_im_update
+	{
+	wait_im_update[WW]:=wait_im_update[WW]-1
+	if (wait_im_update[WW]=0)
+		{
+		cc:=1
+		upd_image_w(striml(WW,1))
+		wait_im_update.remove(ww)
+		
+		}
+	}
+if (cc=1)
+{
+scredr2()
+}
+return
+------------------------------------------------------------------------------------------
+upd_image_w(root_wind)
+{
+
+global THUMB_DATA
+thumbnailcreatable_win:=THUMB_DATA["_" . root_wind,"thumbnailcreatable_win"]
+WinGet MinMaxState, MinMax, ahk_id %thumbnailcreatable_win%
+if (wp_getProp(root_wind,"WINAFTERMINALLSTATE")=0) and (thumbnailcreatable_win<>"")
+	{
+	if (MinMaxState <> -1)  
+		{
+		Thumb:=THUMB_DATA["_" . root_wind,"Thumb"]
+		img:=THUMB_DATA["_" . Thumb,"ThumbImage"]
+		iimg:=THUMB_DATA["_" . Thumb,"ThumbIcon"]
+		copy_win_img_to_contr(thumbnailcreatable_win,Thumb,img,iimg)
+		}
+	}
+}
+
+scredr2()
+{
+global hredr,do_scredr2
+if A_OSVersion in WIN_XP  ; Note: No spaces around commas.
+	{
+	if (do_scredr2=true)
+		{
+		Gui Redra: +AlwaysOnTop
+		Gui Redra:Show,  NoActivate 
+		Gui Redra:Hide
+		}
+	}
+}
+------------------------------------------------------------------------------------------
+copy_win_img_to_contr(SourceWin,TargetWin,TargetContol,TargIc)
+{
+
+global Bord
+WinGetPos,,, DstWidth, DstHeight, ahk_id %TargetWin%
+DstWidth:=DstWidth-Bord
+DstHeight:=DstHeight-Bord
+pBitmapI :=Gdip_CreateBitmapFromHICON(Get_Window_Icon(SourceWin))
+hBitmapI := Gdip_CreateHBITMAPFromBitmap(pBitmapI)
+;msgbox %pBitmap%
+pBitmap := 	Gdip_BitmapFromHWNDStretchToDst(SourceWin,DstWidth,DstHeight)
+hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap)
+if (pBitmap<>0)
+	SetImage(TargetContol, hBitmap)
+if (pBitmapI<>0)
+	SetImage(TargIc, hBitmapI)
+DeleteObject(hBitmap)
+DeleteObject(hBitmapI)
+Gdip_DisposeImage(pBitmap)
+Gdip_DisposeImage(pBitmapI)
+if pBitmap=0
+	return false
+return true
+}
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+destroy_thumbnail(root_wind)
+{
+global THUMB_DATA,ACTIVE_MARKER,activated_window
+
+Gui a%root_wind%:Destroy
+
+Thumb:=THUMB_DATA["_" . root_wind,"Thumb"]
+;msgbox % root_wind . " " . activated_window
+if (root_wind=activated_window)
+	{
+	;
+	winmove,ahk_id %ACTIVE_MARKER%,,0,0,0,0
+	}
+THUMB_DATA.remove("_" . root_wind)
+THUMB_DATA.remove("_" . Thumb)
+
+}
+------------------------------------------------------------------------------------------
+not_hidden_by_user_or_system(wind)
+{
+
+global EMPTY_TITLE,UNWATCHED_PROCS,UNWATCHED_TITLES,UNWATCHED_CLASSES,UNWATCHED_USER_PROCS,UNWATCHED_USER_CLASSES
+WinGetClass, Class, ahk_id %wind%
+WinGet, proc, ProcessName, ahk_id %wind%
+	
+if (UNWATCHED_USER_PROCS.haskey(proc)) or (UNWATCHED_USER_CLASSES.haskey(Class))	
+	return false
+		
+return true
+}
+------------------------------------------------------------------------------------------
+get_child_wins(wind)
+{
+winds_on_pid:=get_all_winds()
+
+for n,wind_on_pid in winds_on_pid
+	{
+	
+	pv:=get_Parent_Win(wind_on_pid)
+	
+
+	if (pv=wind)
+		{
+		
+		
+;msgbox cld
+		ini_arr(arr)
+		arr.insert(wind_on_pid)
+		}
+	}
+return arr
+}
+------------------------------------------------------------------------------------------
+
+get_winds_on_pid(CPID)
+{
+WinGet, same_pid_winds, List,  ahk_pid %CPID%
+ini_arr(arr)
+Loop %same_pid_winds%
+	{
+arr.insert(same_pid_winds%A_index%)
+	}
+return arr
+}
+------------------------------------------------------------------------------------------
+gwt(win)
+{
+WinGetTitle, Title, ahk_id %win%
+return Title
+}
+gwc(win)
+{
+WinGetClass, Title, ahk_id %win%
+return Title
+}
+gwp(win)
+{
+WinGet, proc, ProcessName, ahk_id %win%
+return proc
+}
+------------------------------------------------------------------------------------------
+get_root_win(wind)
+{
+
+	
+;msgbox start se %wind%= %mxi%> %pr%>%cl%
+loop 1000
+	{
+	win_tmp:=get_Parent_Win(wind)
+	
+	if (win_tmp="")
+		{
+		break
+		}	
+	if not(winexist(c_winstr(win_tmp)))
+		{
+		break
+		}
+	wind:=win_tmp
+	}
+	win_tmp:=wind
+	cl:=gwc(wind)
+	pr:=gwp(wind)
+return wind
+}
+---------------------------------------------
+GetWinParamId(ParamType,WinId:=" ")
+{
+info:=GetWinParam(ParamType,c_winstr(WinId))
+return info
+}
+---------------------------------------------
+c_winstr(WinId)
+{
+if (WinId=" ")
+	{
+	WinIdstr = A
+	}
+	else
+	{
+	WinIdstr = ahk_id %WinId%
+	
+	}
+
+return WinIdstr
+}
+---------------------------------------------
+c_win(wstr)
+{
+StringTrimLeft, win, wstr, 7
+return win
+}
+---------------------------------------------
+GetWinParam(ParamType,WinIdstr:="A")
+{
+WinGet, info, %ParamType%, %WinIdstr%
+return info
+}
+---------------------------------------------
+get_Parent_Win(wind)
+{
+ID :=DllCall("GetParent", UInt,wind)
+if (ID<>0)	
+	return C10_16(ID)
+else
+	return ""
+}
+----------------------------------------------
+C10_16(var)
+{
+SetFormat, integer, hex
+var += 0
+SetFormat, integer, d
+return var
+}
+----------------------------------------------
+
+------------------------------------------------------------------------------------------
+get_all_winds(filtr:=" ")
+{
+if (filtr=" ")
+	{
+WinGet, ids, list
+	}
+	else
+	{
+WinGet, ids, list,filtr
+	}
+ini_arr(arr)
+Loop %ids%
+	{
+arr.insert(ids%A_index%)
+	}
+return arr
+}
+------------------------------------------------------------------------------------------
+calc_THUMB_HEIGHT(THUMB_WIDTH_)
+{
+global 
+THUMB_WIDTH:=THUMB_WIDTH_-2
+
+WinGetPos,TBX,TBY,TASK_BAR_WIDTH,TASK_BAR_HEIGH2T,ahk_class Shell_TrayWnd
+TASK_BAR_HEIGHT:=TASK_BAR_HEIGH2T
+if (TASK_BAR_HEIGH2T=a_screenheight) or (TBY=0)
+	{
+	TASK_BAR_HEIGH2T:=3
+	}
+	
+THUMB_HEIGHT:=round(THUMB_WIDTH/(A_ScreenWidth/(A_ScreenHeight-TASK_BAR_HEIGH2T)),0)
+MAX_TOP:=round(A_ScreenHeight - THUMB_HEIGHT-TASK_BAR_HEIGH2T,0)
+}
+
+calc_act_bord()
+{
+global
+ACT_LIM_RIG:=MonitorLimitRight - 3
+ACT_LIM_LEFT:=MonitorLimitLeft + 3
+ACT_LIM_TOP:=MonitorLimitTop + 3
+ACT_LIM_BOTT:=MonitorLimitBottom - 3
+
+if (props["ACTIVATE_ON_MOUSE_ON"]=0) and (props["switch_on_TB_if_ActOnCl"]=true)
+	{
+	if (TASK_BAR_HEIGHT<>a_screenheight) and (TBY<>0)
+		ACT_LIM_BOTT:=MonitorLimitBottom - TASK_BAR_HEIGHT
+	}
+}
+------------------------------------------------------------------------------------------
+Get_Window_Icon(wid, Use_Large_Icons_Current=1) ; (window id, whether to get large icons)
+{
+
+
+  ; check status of window - if window is responding or "Not Responding"
+
+  h_icon:=0
+  Responding := DllCall("SendMessageTimeout", "UInt", wid, "UInt", 0x0, "Int", 0, "Int", 0, "UInt", 0x2, "UInt", 150, "UInt *", NR_temp) ; 150 = timeout in millisecs
+  If (Responding)
+    {
+    ; WM_GETICON values -    ICON_SMALL =0,   ICON_BIG =1,   ICON_SMALL2 =2
+    If Use_Large_Icons_Current =1
+      {
+      SendMessage, 0x7F, 1, 0,, ahk_id %wid%
+      h_icon := ErrorLevel
+      }
+    If ( ! h_icon )
+      {
+      SendMessage, 0x7F, 2, 0,, ahk_id %wid%
+      h_icon := ErrorLevel
+        If ( ! h_icon )
+          {
+          SendMessage, 0x7F, 0, 0,, ahk_id %wid%
+          h_icon := ErrorLevel
+          If ( ! h_icon )
+            {
+            If Use_Large_Icons_Current =1
+              h_icon := DllCall( "GetClassLong", "uint", wid, "int", -14 ) ; GCL_HICON is -14
+            If ( ! h_icon )
+              {
+              h_icon := DllCall( "GetClassLong", "uint", wid, "int", -34 ) ; GCL_HICONSM is -34
+              ;If ( ! h_icon )
+              ;  h_icon := DllCall( "LoadIcon", "uint", 0, "uint", 32512 ) ; IDI_APPLICATION is 32512
+              }
+            }
+          }
+        }
+      }
+return h_icon
+}
+------------------------------------------------------------------------------------------
+Gdip_BitmapFromHWNDStretchToDst(SrcHwnd,DstWidth,DstHeight,Bord:=0)
+{
+
+WinGetPos,,, Width, Height, ahk_id %SrcHwnd%
+if (Width=0) or (Height=0)
+	{
+	return 0
+	}
+if (A_OSVersion in WIN_XP)  ; Note: No spaces around commas.
+	{
+	pBitmap := Gdip_BitmapFromHWND(SrcHwnd)
+	}
+else
+	{
+	if (SrcHwnd="")
+		{
+		SrcHwnd:=0
+		}
+	hdc2 := DllCall("GetDC", UInt, SrcHwnd)
+	hdc := DllCall("CreateCompatibleDC", "uint", hdc2)
+	hbm := DllCall("gdi32.dll\CreateCompatibleBitmap", UInt,hdc2 , Int,Width, Int,Height)
+	obm := DllCall( "gdi32.dll\SelectObject", UInt,hdc, UInt,hbm)
+	PrintWindow(SrcHwnd, hdc)
+	pBitmap := Gdip_CreateBitmapFromHBITMAP(hbm)
+	sel_obj := SelectObject(hdc, obm)
+	DeleteObject(obm), 
+	DeleteObject(hbm), 
+	DeleteDC(hdc),
+	DeleteDC(hdc2),
+	DeleteObject(sel_obj)
+	}
+pBitmap := Gdip_ResizepBitmap(pBitmap, Width, Height, DstWidth, DstHeight,Bord)
+return pBitmap
+}
+file_to_arr(file)
+{
+c:=0
+arr:= Object()
+IfExist, %file%
+	{
+
+	
+	Loop, read, %file%
+		{
+		if (c=0)
+			{
+			c:=1
+			}
+		else
+			{
+			c:=0
+			}
+		if (c=1)
+			{
+			key=%A_LoopReadLine%
+			
+			}
+		else
+			{
+			arr[key]:=(A_LoopReadLine)
+			;msgbox %key% %A_LoopReadLine%
+			}
+		}
+
+	}
+
+return arr
+}
+ini_arr(byref arr)
+{
+if not (isobject(arr))
+arr:= Object()
+}
+hasKeyKey(arr,key1,key2)
+{
+if (arr[key1,key2]=0)
+	return True
+dd:=arr[key1,key2]
+dd=%dd%-
+if (dd="-")
+	return False
+return True
+	
+}
+is_inside_BB_2d(main_obj_min, main_obj_max, ins_obj_min, ins_obj_max)
+{
+If ins_obj_min[0] <= main_obj_max[0] And main_obj_min[0] <= ins_obj_max[0] And ins_obj_min[1] <= main_obj_max[1] And main_obj_min[1] <= ins_obj_max[1] 
+	{
+	return  True
+	}	
+return FALSE
+}
+
+is_inside_BB_2d_pt(main_obj_min, main_obj_max, ins_pt)
+{
+If ins_pt[0] <= main_obj_max[0] And main_obj_min[0] <= ins_pt[0] And ins_pt[1] <= main_obj_max[1] And main_obj_min[1] <= ins_pt[1] 
+	{
+	return  True
+	}	
+return FALSE
+}
+arr_to_file(arr,file)
+{
+file := FileOpen(file, "w")
+	for i, el in arr
+	{
+i =%i%`r
+File.WriteLine(i)
+el=%el%`r
+File.WriteLine(el)
+	}
+file.Close()
+}
+Gdip_ResizepBitmap(pBitmap,SrcW,SrcH,DstW,DstH,Bord:=0)
+{
+	nwpBitmap := Gdip_CreateBitmap(DstW,DstH)
+	nwpGraphics := Gdip_GraphicsFromImage(nwpBitmap)
+	Gdip_DrawImage(nwpGraphics, pBitmap, 0, 0, DstW, DstH, Bord, Bord, SrcW, SrcH)
+	Gdip_DeleteGraphics(nwpGraphics)
+	Gdip_DisposeImage(pBitmap)
+
+	return nwpBitmap
+}

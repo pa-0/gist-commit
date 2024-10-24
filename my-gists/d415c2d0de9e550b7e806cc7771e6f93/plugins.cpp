@@ -1,0 +1,18 @@
+#include <QtCore/QtPlugin>
+#ifndef _WIN32
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+Q_IMPORT_PLUGIN(QXcbGlxIntegrationPlugin)
+Q_IMPORT_PLUGIN(QEvdevKeyboardPlugin)
+Q_IMPORT_PLUGIN(QEvdevMousePlugin)
+#else
+Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+Q_IMPORT_PLUGIN(QtQuick2DialogsPrivatePlugin)
+Q_IMPORT_PLUGIN(QmlFolderListModelPlugin)
+#endif
+Q_IMPORT_PLUGIN(QtQuick2Plugin)
+Q_IMPORT_PLUGIN(QtQuickControlsPlugin)
+Q_IMPORT_PLUGIN(QtQuick2DialogsPlugin)
+Q_IMPORT_PLUGIN(QtQuickLayoutsPlugin)
+Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
+Q_IMPORT_PLUGIN(QmlSettingsPlugin)
+Q_IMPORT_PLUGIN(QtQuick2PrivateWidgetsPlugin)

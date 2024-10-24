@@ -1,0 +1,2 @@
+rem  ---- Change versions and paths acccordingly to the actual Qt and machine configurations
+call build-qt6-win-static.bat --qt-version=6.4 --qt-subversion=6.4.1 --devtools-path="C:\dev-tools" --source-root="C:\Qt\6.4.1-static\src" --build-root="C:\SDKs\Qt\6.4.1-static" --vs-version=2019 --download --erase-archive

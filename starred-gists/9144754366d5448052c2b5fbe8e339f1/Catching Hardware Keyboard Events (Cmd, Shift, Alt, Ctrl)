@@ -1,0 +1,70 @@
+int main(int argc, char *argv[]) {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    int retVal = UIApplicationMain(argc, argv, @"Application", @"AppDelegate");
+    [pool drain];
+    return retVal;
+}
+
+@interface Application : UIApplication
+@end
+@implementation Application
+
+// Calculation of offsets for traversing GSEventRef:
+// Count the size of types inside CGEventRecord struct. Just for Reference:
+// https://github.com/kennytm/iphone-private-frameworks/blob/master/GraphicsServices/GSEvent.h
+
+// typedef struct GSEventRecord {
+//    GSEventType type; // 0x8
+//    GSEventSubType subtype;    // 0xC
+//    CGPoint location;     // 0x10
+//    CGPoint windowLocation;    // 0x18
+//    int windowContextId;    // 0x20
+//    uint64_t timestamp;    // 0x24, from mach_absolute_time
+//    GSWindowRef window;    // 0x2C
+//    GSEventFlags flags;    // 0x30
+//    unsigned senderPID;    // 0x34
+//    CFIndex infoSize; // 0x38
+//} GSEventRecord;
+
+#define GS_EVENT_TYPE_OFFSET 2
+
+// fields length (1 : 4 bytes)
+#define GS_EVENT_TYPE_LEN 1
+#define GS_EVENT_SUBTYPE_LEN 1
+#define GS_EVENT_LOCATION_LEN 2
+#define GS_EVENT_WINLOCATION_LEN 2
+#define GS_EVENT_WINCONTEXTID_LEN 1
+#define GS_EVENT_TIMESTAMP_LEN 4
+#define GS_EVENT_WINREF_LEN 1
+//#define GS_EVENT_FLAGS_LEN 1
+//#define GS_EVENT_SENDERPID_LEN 1
+//#define GS_EVENT_INFOSIZE_LEN 1
+
+- (void)sendEvent:(UIEvent *)anEvent
+{
+    [super sendEvent:anEvent];
+    return;// Disable below code because so far I couldn't find key event flags (Shift, Cmd, Alt, Ctrl)
+
+    // Send notification if is a keyboard event
+    if ([anEvent respondsToSelector:@selector(_gsEvent)]) {
+        // Hardware Key events are of kind UIInternalEvent which are a wrapper of GSEventRef which is wrapper of GSEventRecord
+        int *eventMemory = (int *)[anEvent performSelector:@selector(_gsEvent)];
+        if (eventMemory) {
+
+            int eventType = eventMemory[GS_EVENT_TYPE_OFFSET];
+            NSLog(@"event type = %d", eventType); // keydown:11, keyup:12
+
+            int flagsOffset = GS_EVENT_TYPE_OFFSET + GS_EVENT_TYPE_LEN + GS_EVENT_SUBTYPE_LEN + GS_EVENT_LOCATION_LEN + GS_EVENT_WINLOCATION_LEN + GS_EVENT_WINCONTEXTID_LEN + GS_EVENT_TIMESTAMP_LEN + GS_EVENT_WINREF_LEN;
+            
+           // Apparently above offset calculation is only for iOS4, in iOS5 GSEvent.h is somehow changed and below code does not work
+
+           int eventFlags = eventMemory[flagsOffset];
+           printf("%8X ", eventFlags);
+           printf("Shift Ctrl Alt Cmd %d %d %d %d\n ", (eventFlags&(1<<17))?1:0, (eventFlags&(1<<18))?1:0, (eventFlags&(1<<19))?1:0, (eventFlags&(1<<20))?1:0 );
+
+          // Now do something with the flags :)
+        }
+    }
+}
+
+@end

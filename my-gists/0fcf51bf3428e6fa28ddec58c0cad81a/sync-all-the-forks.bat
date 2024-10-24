@@ -1,0 +1,1 @@
+for /f %%A in ('gh repo list --fork -L 1000 --json nameWithOwner -q ".[].nameWithOwner"') do gh repo sync %%A

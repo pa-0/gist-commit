@@ -1,0 +1,20 @@
+Access the commands from Windows SDK by adding this path to your enviromental variables:
+C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64
+
+1. Create your root certificate authority
+makecert -r -pe -n "CN=CA ex" -ss CA -sr CurrentUser ^ -a sha256 -cy authority -sky signature -sv CAex.pvk CAex.cer
+
+2. Create a certificate for code-signing
+makecert -pe -n "CN=MyCert" -a sha256 -cy end ^ -sky signature ^ -ic CAex.cer -iv CAex.pvk ^ -sv MyCert.pvk MyCert.cer
+
+3. Convert certificate and key into a PFX file
+pvk2pfx -pvk MyCert.pvk -spc MyCert.cer -pfx MyCert.pfx -po fess
+
+4. Trust your certificate authority by importing the CA certificate
+certutil -user -addstore Root CAex.cer
+
+5. Sign your executable or any file
+signtool.exe sign /f "MyCert.pfx" /p fess "C:\Output\myapp.exe"
+
+
+Reference: https://docs.microsoft.com/en-us/windows-hardware/drivers/install/obtaining-a-software-publisher-certificate--spc-

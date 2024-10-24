@@ -1,0 +1,46 @@
+<?xml version="1.0"?><root listing="C:\Users\$\Desktop\Stuff\efi">
+ <dir n="boot">
+   <f n="bootx64.efi"/>
+ </dir>
+ <dir n="microsoft">
+ <dir n="boot">
+   <f n="bcd"/>
+   <f n="cdboot.efi"/>
+   <f n="cdboot_noprompt.efi"/>
+   <f n="efisys.bin"/>
+   <f n="efisys_noprompt.bin"/>
+ <dir n="fonts">
+   <f n="chs_boot.ttf"/>
+   <f n="cht_boot.ttf"/>
+   <f n="jpn_boot.ttf"/>
+   <f n="kor_boot.ttf"/>
+   <f n="malgunn_boot.ttf"/>
+   <f n="malgun_boot.ttf"/>
+   <f n="malgun_console.ttf"/>
+   <f n="meiryon_boot.ttf"/>
+   <f n="meiryo_boot.ttf"/>
+   <f n="meiryo_console.ttf"/>
+   <f n="msjhn_boot.ttf"/>
+   <f n="msjh_boot.ttf"/>
+   <f n="msjh_console.ttf"/>
+   <f n="msyhn_boot.ttf"/>
+   <f n="msyh_boot.ttf"/>
+   <f n="msyh_console.ttf"/>
+   <f n="segmono_boot.ttf"/>
+   <f n="segoen_slboot.ttf"/>
+   <f n="segoe_slboot.ttf"/>
+   <f n="wgl4_boot.ttf"/>
+ </dir>
+   <f n="memtest.efi"/>
+ <dir n="no!thing &amp; here">
+   <f n="just a test1.txt"/>
+   <f n="just a test2.txt"/>
+   <f n="just a test3.txt"/>
+ </dir>
+   <f n="read!me &amp; test.txt"/>
+ <dir n="resources">
+   <f n="bootres.dll"/>
+ </dir>
+ </dir>
+ </dir>
+</root>

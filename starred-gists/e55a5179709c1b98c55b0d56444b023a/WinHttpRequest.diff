@@ -1,0 +1,157 @@
+--- WinHttpRequest.ahk
++++ WinHttpRequest-deprecated.ahk
+@@ -1 +1 @@
+-﻿#Requires AutoHotkey v2.0
++﻿#Requires AutoHotkey v1.1
+@@ -7,0 +8,4 @@
++WinHttpRequest(oOptions := "") {
++    return new WinHttpRequest(oOptions)
++}
++
+@@ -10 +14 @@
+-    whr := ComObject("WinHttp.WinHttpRequest.5.1")
++    whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+@@ -17 +21 @@
+-            oOptions := Map()
++            oOptions := {}
+@@ -19 +23 @@
+-        if (!oOptions.Has("Proxy") || !oOptions["Proxy"]) {
++        if (!oOptions.HasKey("Proxy") || !oOptions.Proxy) {
+@@ -21 +25 @@
+-        } else if (oOptions["Proxy"] = "DIRECT") {
++        } else if (oOptions.Proxy = "DIRECT") {
+@@ -24 +28 @@
+-            this.whr.SetProxy(HTTPREQUEST_PROXYSETTING_PROXY, oOptions["Proxy"])
++            this.whr.SetProxy(HTTPREQUEST_PROXYSETTING_PROXY, oOptions.Proxy)
+@@ -26,2 +30,2 @@
+-        if (oOptions.Has("Revocation")) {
+-            this.whr.Option[EnableCertificateRevocationCheck] := !!oOptions["Revocation"]
++        if (oOptions.HasKey("Revocation")) {
++            this.whr.Option[EnableCertificateRevocationCheck] := !!oOptions.Revocation
+@@ -31,2 +35,2 @@
+-        if (oOptions.Has("SslError")) {
+-            if (oOptions["SslError"] = false) {
++        if (oOptions.HasKey("SslError")) {
++            if (oOptions.SslError = false) {
+@@ -36 +40 @@
+-        if (!oOptions.Has("TLS")) {
++        if (!oOptions.HasKey("TLS")) {
+@@ -39 +43 @@
+-            this.whr.Option[SecureProtocols] := oOptions["TLS"]
++            this.whr.Option[SecureProtocols] := oOptions.TLS
+@@ -41,2 +45,2 @@
+-        if (oOptions.Has("UA")) {
+-            this.whr.Option[UserAgentString] := oOptions["UA"]
++        if (oOptions.HasKey("UA")) {
++            this.whr.Option[UserAgentString] := oOptions.UA
+@@ -49 +53 @@
+-    static EncodeUri(sUri) {
++    EncodeUri(sUri) {
+@@ -53 +57 @@
+-    static EncodeUriComponent(sComponent) {
++    EncodeUriComponent(sComponent) {
+@@ -57 +61 @@
+-    static DecodeUri(sUri) {
++    DecodeUri(sUri) {
+@@ -61 +65 @@
+-    static DecodeUriComponent(sComponent) {
++    DecodeUriComponent(sComponent) {
+@@ -65 +69 @@
+-    static ObjToQuery(oData) {
++    ObjToQuery(oData) {
+@@ -77 +81 @@
+-    static QueryToObj(sData) {
++    QueryToObj(sData) {
+@@ -82 +86 @@
+-        obj := Map()
++        obj := {}
+@@ -97 +101 @@
+-            throw Error("Not initialized.", -1)
++            throw Exception("Not initialized.", -1)
+@@ -101 +105 @@
+-            throw Error("Invalid HTTP verb.", -1, sMethod)
++            throw Exception("Invalid HTTP verb.", -1, sMethod)
+@@ -104 +108 @@
+-            throw Error("Empty URL.", -1)
++            throw Exception("Empty URL.", -1)
+@@ -107 +111 @@
+-            oHeaders := Map()
++            oHeaders := {}
+@@ -110 +114 @@
+-            oOptions := Map()
++            oOptions := {}
+@@ -113,2 +117,2 @@
+-            multi := oOptions.Has("Multipart") ? !!oOptions["Multipart"] : false
+-            this._Post(&mBody, &oHeaders, multi)
++            multi := oOptions.HasKey("Multipart") ? !!oOptions.Multipart : false
++            this._Post(mBody, oHeaders, multi)
+@@ -127,2 +131,2 @@
+-        if (oOptions.Has("Save")) {
+-            target := RegExReplace(oOptions["Save"], "^\h*\*\h*", "", &forceSave)
++        if (oOptions.HasKey("Save")) {
++            target := RegExReplace(oOptions.Save, "^\h*\*\h*", "", forceSave)
+@@ -134 +138 @@
+-        out := WinHttpRequest._Response()
++        out := new WinHttpRequest._Response()
+@@ -137 +141 @@
+-        out.Text := this._Text(oOptions.Has("Encoding") ? oOptions["Encoding"] : "")
++        out.Text := this._Text(oOptions.HasKey("Encoding") ? oOptions.Encoding : "")
+@@ -146 +150 @@
+-    static _EncodeDecode(Text, bEncode, bComponent) {
++    _EncodeDecode(Text, bEncode, bComponent) {
+@@ -148 +152 @@
+-            this._doc := ComObject("HTMLFile")
++            this._doc := ComObjCreate("HTMLFile")
+@@ -158 +162 @@
+-        out := Map()
++        out := {}
+@@ -161 +165 @@
+-            out.Set(pair*)
++            out[pair[1]] := pair[2]
+@@ -167,2 +171,2 @@
+-        if (WinHttpRequest.MIME.HasProp(Extension)) {
+-            return WinHttpRequest.MIME.%Extension%
++        if (WinHttpRequest.MIME.HasKey(Extension)) {
++            return WinHttpRequest.MIME[Extension]
+@@ -173 +177 @@
+-    _MultiPart(&Body) {
++    _MultiPart(ByRef Body) {
+@@ -193 +197 @@
+-            str .= "Content-Disposition: form-data; name=`"" Field "`""
++            str .= "Content-Disposition: form-data; name=""" Field """"
+@@ -202 +206 @@
+-            SplitPath(path, &filename, , &ext)
++            SplitPath path, filename, , ext
+@@ -205 +209 @@
+-            str .= "Content-Disposition: form-data; name=`"" Field "`"; filename=`"" filename "`""
++            str .= "Content-Disposition: form-data; name=""" Field """; filename=""" filename """"
+@@ -221 +225 @@
+-            throw Error("Couldn't open file for reading.", -1, Path)
++            throw Exception("Couldn't open file for reading.", -1, Path)
+@@ -236 +240 @@
+-    _Post(&Body, &Headers, bMultipart) {
++    _Post(ByRef Body, ByRef Headers, bMultipart) {
+@@ -243,2 +247,2 @@
+-            boundary := this._MultiPart(&Body)
+-            Headers["Content-Type"] := "multipart/form-data; boundary=`"" boundary "`""
++            boundary := this._MultiPart(Body)
++            Headers["Content-Type"] := "multipart/form-data; boundary=""" boundary """"
+@@ -247 +251 @@
+-            if (!Headers.Has("Content-Type")) {
++            if (!Headers.HasKey("Content-Type")) {
+@@ -276,7 +280 @@
+-        /* _H v2.0.2 adds Object.Prototype.Get() breaking
+-        GET verb's dynamic call, this is a workaround. */
+-        GET(Parameters*) {
+-            return this.Request("GET", Parameters*)
+-        }
+-
+-        __Call(Method, Parameters) {
++        __Call(Method, Parameters*) {
+@@ -292,3 +290,3 @@
+-                method := HasMethod(JSON, "parse") ? "parse" : "Load"
+-                oJson := ObjBindMethod(JSON, method, this.Text).Call()
+-                this.DefineProp("Json", { Value: oJson })
++                method := Json.HasKey("parse") ? "parse" : "Load"
++                oJson := ObjBindMethod(Json, method, this.Text).Call()
++                ObjRawSet(this, "Json", oJson)

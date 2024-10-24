@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+#
+# This script downloads an asset from latest or specific Github release of a
+# public or private repo.
+#
+# PREREQUISITES:
+#
+# curl, wget, jq
+#
+set -eE -o functrace
+
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
+set -o pipefail                                                                                                                                                  
+
+GITHUB="https://api.github.com"
+FILE_ASSETS=""
+FILE_OUTPUT=""                                                                                            
+REPOSITORY_URL=""
+TOKEN=""                                                                                                                                                                       
+VERSION="latest"
+
+function showHelp() {
+   echo "This script downloads an asset from latest or specific Github release of a public or private repo"
+   echo
+   echo "Usage: gh-dl-release.sh --file-assets VALUE --repository-url user/repo --version latest"
+   echo
+   echo "Syntax: gh-dl-release.sh [ -u;--update-scripts | -h;--help ]"
+   echo "options:"
+   echo "--file-assets          : [Req.] The name of your release asset file, e.g. build.tar.gz  "
+   echo "--file-output          : [Default => value of --file-assets] The name or path of your release asset file after download"
+   echo "-r | --repository-url  : [Req.] Repository url user/repo"
+   echo "-v | --version         : [Default => 'latest'] Tag name or release naming"
+   echo "-t | --token           : Auth Token for private repo"
+   echo "-h | --help            : Print help"
+   echo
+   exit 0
+}
+
+function _parser() {
+  options=$(getopt -l "help,file-assets:,file-output:,token:,repository-url:,version:" -o "h t: r: v:" -a -- "$@")
+  eval set -- "$options"
+
+  while true
+      do
+      case $1 in
+          -h|--help)
+              showHelp
+              ;;
+          --file-assets)
+              FILE_ASSETS=${2}
+            ;;
+          --file-output)
+              FILE_OUTPUT=${2}
+              ;;
+          -t|--token)
+              TOKEN=${2}
+              ;;
+          -r|--repository-url)
+              REPOSITORY_URL=${2}
+              ;;
+          -v|--version)
+              VERSION=${2}
+              ;;
+          --)
+              shift
+              break;;
+      esac
+      shift
+  done
+  shift "$(($OPTIND -1))"
+
+  if [[ -z ${FILE_ASSETS:-} || "${FILE_ASSETS}" == "" ]] ; then 
+    >&2 echo 'FILE_ASSETS is empty. Use option -fa or --file-assets' 
+    exit 1
+  fi
+
+  if [[ -z ${REPOSITORY_URL:-} || "${REPOSITORY_URL}" == "" ]] ; then 
+    >&2 echo 'REPOSITORY_URL is empty. Use option -r or --repository-url' 
+    exit 1
+  fi
+
+  if [[ -z ${VERSION:-} || "${VERSION}" == "" ]] ; then 
+    >&2 echo 'VERSION is empty. Use option -v or --version' 
+    exit 1
+  fi
+
+  if [[ -z ${TOKEN:-} || "${TOKEN}" == "" ]] ; then 
+    echo "Token not set"
+  fi
+
+  if [[ -z ${FILE_OUTPUT:-} || "${FILE_OUTPUT}" == "" ]] ; then 
+    FILE_OUTPUT=${FILE_ASSETS}
+    echo "File output -> ${FILE_OUTPUT}"
+  fi
+}
+
+function github_curl() {                                                                                                                                                             
+  curl -H "Authorization: token $TOKEN" -H "Accept: application/vnd.github.v3.raw" "$@"                                                                                                                                                                       
+}                                                                                                                                                                                
+                                                                                                                                                                                 
+function main(){
+  _parser "$@"
+
+  local _URL
+
+  if [ "${TOKEN}" == "" ] ; then
+    _URL="https://github.com/${REPOSITORY_URL}/releases/download/${VERSION}/${FILE_ASSETS}"
+    wget "${_URL}" -O "${FILE_OUTPUT}" 
+    exit 0
+  fi
+
+  local _JQ_EXPRESSION
+  if [ "$VERSION" = "latest" ]; then                                                                                                                                               
+    # Github should return the latest release first.                                                                                                                               
+    _JQ_EXPRESSION=".[0].assets | map(select(.name == \"${FILE_ASSETS}\"))[0].id"                                                                                                                   
+  else                                                                                                                                                                             
+    _JQ_EXPRESSION=". | map(select(.tag_name == \"$VERSION\"))[0].assets | map(select(.name == \"$FILE_ASSETS\"))[0].id"                                                                          
+  fi; 
+  
+  local _ASSET_ID
+  _ASSET_ID=$(github_curl -s "${GITHUB}/repos/${REPOSITORY_URL}/releases")
+  if [[ "${_ASSET_ID}" =~ "Bad credentials" ]]; then
+    >&2 echo "Token not valid"
+    exit 1
+  fi
+  _ASSET_ID=$(echo "${_ASSET_ID}" | jq "${_JQ_EXPRESSION}")                                                                                                                
+  
+  if [ "${_ASSET_ID}" == "null" ] ; then                                                                                                                                                
+    >&2 echo "ERROR: version not found $VERSION"                                                                                                                                   
+    exit 1                                                                                                                                                                         
+  fi;  
+
+  _URL="https://${TOKEN}:@api.github.com/repos/${REPOSITORY_URL}/releases/assets/${_ASSET_ID}"
+
+  wget -nv --auth-no-challenge --header='Accept:application/octet-stream' "${_URL}" -O "${FILE_OUTPUT}" 
+}
+
+main "$@"

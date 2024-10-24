@@ -1,0 +1,159 @@
+; A High Contrast based neutral / less blues tone Windows Light Theme by AveYo
+; To use, enable Show File Extensions, and remove .txt / rename to custom.theme
+; Copy to "%LOCALAPPDATA%\Microsoft\Windows\Themes"
+; BlackLess Dark Theme available at https://pastebin.com/fA3t5Sd2
+; Fixed revert to highcontrast after restart, try to keep current wallpaper
+; Last updated: 2022.01.30 fix some Windows 11 quirks
+
+; To enable small borders, enter in a command prompt the 2 lines below then log off:
+; reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v BorderWidth /d 0 /f
+; reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v PaddedBorderWidth /d 0 /f
+
+[Theme]
+DisplayName=WhiteLess
+ThemeId={cafecafe-cafe-cafe-cafe-cafecafecaf2}
+
+; Computer - SHIDI_SERVER
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%SystemRoot%\System32\imageres.dll,-109
+
+; UsersFiles - SHIDI_USERFILES
+[CLSID\{59031A47-3F72-44A7-89C5-5595FE6B30EE}\DefaultIcon]
+DefaultValue=%SystemRoot%\System32\imageres.dll,-123
+
+; Network - SHIDI_MYNETWORK
+[CLSID\{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}\DefaultIcon]
+DefaultValue=%SystemRoot%\System32\imageres.dll,-25
+
+; Recycle Bin - SHIDI_RECYCLERFULL SHIDI_RECYCLER
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+Full=%SystemRoot%\System32\imageres.dll,-54
+Empty=%SystemRoot%\System32\imageres.dll,-55
+
+[Control Panel\Colors]
+
+ActiveBorder=196 188 182
+
+ActiveTitle=176 168 162
+
+AppWorkspace=216 208 202
+
+Background=136 128 122
+
+ButtonAlternateFace=156 148 142
+
+ButtonDkShadow=156 148 142
+
+ButtonFace=206 198 192
+
+ButtonHilight=186 178 172
+
+ButtonLight=176 168 162
+
+ButtonShadow=156 148 142
+
+ButtonText=0 0 0
+
+GradientActiveTitle=0 0 0
+
+GradientInactiveTitle=240 240 240
+
+GrayText=80 80 80
+
+Hilight=140 140 160
+
+HilightText=234 226 220
+
+HotTrackingColor=40 40 120
+
+InactiveBorder=216 208 202
+
+InactiveTitle=216 208 202
+
+InactiveTitleText=0 0 0
+
+InfoText=0 0 0
+
+InfoWindow=186 178 172
+
+Menu=206 198 192
+
+MenuBar=206 198 192
+
+MenuHilight=156 148 142
+
+MenuText=0 0 0
+
+Scrollbar=214 206 200
+
+TitleText=0 0 0
+
+Window=214 206 200
+
+WindowFrame=186 178 172
+
+WindowText=0 0 0
+
+[Control Panel\Cursors]
+Arrow=%SystemRoot%\cursors\aero_arrow.cur
+Help=%SystemRoot%\cursors\aero_helpsel.cur
+AppStarting=%SystemRoot%\cursors\aero_working.ani
+Wait=%SystemRoot%\cursors\aero_busy.ani
+NWPen=%SystemRoot%\cursors\aero_pen.cur
+No=%SystemRoot%\cursors\aero_unavail.cur
+SizeNS=%SystemRoot%\cursors\aero_ns.cur
+SizeWE=%SystemRoot%\cursors\aero_ew.cur
+Crosshair=
+IBeam=
+SizeNWSE=%SystemRoot%\cursors\aero_nwse.cur
+SizeNESW=%SystemRoot%\cursors\aero_nesw.cur
+SizeAll=%SystemRoot%\cursors\aero_move.cur
+UpArrow=%SystemRoot%\cursors\aero_up.cur
+DefaultValue=Windows Default
+DefaultValue.MUI=@main.cpl,-1020
+Hand=%SystemRoot%\cursors\aero_link.cur
+Link=
+
+[Control Panel\Desktop]
+Wallpaper=%APPDATA%\Microsoft\Windows\Themes\TranscodedWallpaper
+PicturePosition=4
+;TileWallpaper=0
+;WallpaperStyle=10
+;Pattern=
+;MultimonBackgrounds=0
+
+[Control Panel\Desktop\WindowMetrics]
+BorderWidth=0
+CaptionHeight=-224
+CaptionWidth=-224
+IconTitleWrap=1
+MenuHeight=-224
+MenuWidth=-224
+ScrollHeight=-208
+ScrollWidth=-208
+SmCaptionHeight=-224
+SmCaptionWidth=-224
+PaddedBorderWidth=0
+MinAnimate=0
+
+[VisualStyles]
+Path=%SystemRoot%\resources\Themes\Aero\AeroLite.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+HighContrast=4
+ColorizationColor=0XFF4C4A48
+AutoColorization=0
+Transparency=0
+AppMode=Light
+SystemMode=Light
+VisualStyleVersion=10
+
+[boot]
+SCRNSAVE.EXE=
+
+[MasterThemeSelector]
+MTSM=RJSPBS
+
+[Sounds]
+; IDS_SCHEME_NO_SOUNDS
+SchemeName=@%SystemRoot%\System32\mmres.dll,-801

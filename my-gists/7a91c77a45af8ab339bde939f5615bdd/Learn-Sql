@@ -1,0 +1,41 @@
+comments 
+/*  */
+--
+
+user=root
+password= Chutiyapa@123
+
+/*  to see databases in workbench   */
+SHOW DATABASES;  
+
+/* to create db - name */
+CREATE DATABASE test_db;
+
+/* Working with a Database  */
+USE <db_name>;
+
+/*  show active database */
+select database();
+
+/*  deleting a database*/
+DROP DATABASE <db_name>;
+
+/* to create a table in active db */
+CREATE TABLE customers(
+id INT,
+name VARCHAR(100)
+);
+
+/* show schema of a table   DESC table;*/
+DESC customers;
+
+/* creating user and providing privileges and access for prisma   */
+->Go to "user and priveleges "
+->created new accout 
+->select all tick boxes the "administrative roles "
+
+
+
+YT Link= https://www.youtube.com/playlist?list=PLGf6Ram2AQh2GpckMjstVH6AaTm0kPfgI
+TODO
+continue from video 6

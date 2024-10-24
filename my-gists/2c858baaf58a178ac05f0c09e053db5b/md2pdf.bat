@@ -1,0 +1,1 @@
+pandoc -f markdown-implicit_figures report.md --pdf-engine=xelatex -o report.pdf

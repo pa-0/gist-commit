@@ -1,0 +1,3 @@
+PascalCase is a naming convention in which the first letter of each word is capitalized, and there are no underscores or spaces between words. For example, "FirstName" or "EmployeeSalary". PascalCase is commonly used in object-oriented programming languages like Java and C#.
+
+CamelCase is similar to PascalCase, but the first letter of the first word is lowercase, and the first letter of each subsequent word is capitalized. For example, "firstName" or "employeeSalary". CamelCase is commonly used in languages like JavaScript, Python, and Ruby.

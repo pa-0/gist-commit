@@ -1,0 +1,78 @@
+Virufy ML Preprocessing Set Up
+
+
+Set Up WSL - Windows Subsystem for Linux
+“The Windows Subsystem for Linux lets developers run a GNU/Linux environment -- including most command-line tools, utilities, and applications -- directly on Windows, unmodified, without the overhead of a traditional virtual machine or dualboot setup.
+
+Windows PowerShell - Run as Administrator
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart 
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+
+Download and Run wsl_update_x64.msi : https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
+wsl -set-default-version 2
+
+
+First-time Setup for Ubuntu
+
+Open Microsoft Store
+Install and Run Ubuntu 20.04
+Enter New Username and New Password 
+sudo apt update ###Additional Updates###
+sudo apt upgrade ###Additional Upgrades###
+sudo apt dist-upgrade ###Additional Upgrades###
+
+
+Restart Computer to enact changes
+Set Up Github SSH Token 
+
+
+
+
+ssh-keygen -t rsa ###Do not use -C email address/name or complicates process. Generates both a public and private SSH Key. Never share your private SSH Key. Only the public one should be used for your respective authentifications ###
+cd ~/.ssh
+cat ~/.ssh/id_rsa.pub ###copies SSH Public Key###
+
+
+Open Github Website, Log In, Account Settings, SSH Keys, Add another public key, Past into “Key Field”, Add Key
+eval "$(ssh-agent)" ###initiates ssh-agent to begin communications with device###
+ssh-add
+sudo apt-get install git-core git-gui git-doc
+git clone git@github.com:virufy/ml-preprocessing.git ###Clones repository on local machine###
+
+
+Set Up Poetry 
+Python Packaging and Dependency Management,” Poetry is a tool for dependency management and packaging in Python. It allows you to declare the libraries your project depends on and it will manage (install/update) them for you.”
+
+cd ml-preprocessing
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - ###Use python instead of python3 if python3 not installed### ###Run sudo apt install python-is-python3 if multiple versions of python are installed###
+
+Close and Reopen New Window of Ubuntu
+cd ml-preprocessing
+poetry install
+poetry run python scripts/download_data.py --datasets <YOUR-DATASET-NAME>
+poetry run python scripts/preprocess_data.py --datasets <YOUR-DATASET-NAME>
+poetry run python scripts/upload_data.py --datasets <YOUR-DATASET-NAME>
+
+
+Set Up Visual Studio Code
+
+For Linux Users:
+sudo apt install software-properties-common apt-transport-https wget
+wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+sudo apt install code
+sudo apt update   ###Additional Updates from###
+sudo apt upgrade ###Additional Upgrades###
+code ###running code will open VSCode through Ubuntu Subsystem##
+
+
+For Windows Users:
+Open Microsoft Store
+Search and Install Visual Studio Code
+Install: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack ###Extension to allow Code to run through remote, and thus Ubuntu Subsystem###
+Open Ubuntu
+cd ml-preprocessing
+code .
+code ###running code will open VSCode through Ubuntu Subsystem###
+

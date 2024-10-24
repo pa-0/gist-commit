@@ -1,0 +1,69 @@
+# Lovingly (mostly) stolen from Jess Frazelle <jess@linux.com>
+# https://gist.github.com/jessfraz/7c319b046daa101a4aaef937a20ff41f
+#---- TEMPORARY ---
+Disable-UAC
+
+#--- Fonts ---
+choco install inconsolata -y
+  
+#--- Windows Settings ---
+Disable-BingSearch
+Disable-GameBarTips
+
+Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions
+Set-TaskbarOptions -Size Small -Dock Bottom -Combine Full -Lock
+Set-TaskbarOptions -Size Small -Dock Bottom -Combine Full -AlwaysShowIconsOn
+
+#--- Windows Subsystems/Features ---
+choco install Microsoft-Windows-Subsystem-Linux -source windowsfeatures
+choco install Microsoft-Hyper-V-All -source windowsFeatures
+Add-WindowsFeature RSAT-Hyper-V-Tools
+
+#--- Tools ---
+# Vagrant 2.1.3 is the only one I've gotten to launch Hyper-V from within WSL
+choco install docker-desktop --pre -y
+choco install git -params '"/GitAndUnixToolsOnPath /WindowsTerminal"' -y
+choco install nodejs-lts -y
+choco install poshgit -y
+choco install sysinternals -y
+choco install vim -y
+choco install vscode.portable -y
+choco install vagrant --version 2.1.3 -y
+choco install packer -y
+choco install terraform -y
+refreshenv
+npm install --global auto-changelog
+
+#--- GitLab Runner ---=
+$runnerDownload = 'https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-386.exe'
+$runnerDirectory = 'C:\GitLab-Runner'
+$runnerFile = 'gitlab-runner.exe'
+
+# Download gitlab runner
+New-Item -ItemType Directory -Path $runnerDirectory
+Set-Location -Path $runnerDirectory
+Invoke-WebRequest -Uri $runnerDownload -OutFile $runnerFile -UseBasicParsing
+
+# Register Runner
+if ($env:isRunner) {
+  .\gitlab-runner.exe register --non-interactive --url 'https://gitlab.com' --registration-token "$env:RegistrationToken" --description 'Transient Windows machine used to build Hyper-V images.' --executor 'shell' --tag-list 'hyperv,windows' --locked=false
+  if ($?) {
+      .\gitlab-runner.exe install
+      .\gitlab-runner.exe start
+  }
+}
+
+#--- Download Ubuntu 18.04 Appx Image for Later Installation
+#--- Installing a *nix OS on WSL breaks sysprep /generalize,
+#--- so we don't install it here to ensure this script can
+#--- be composed with image creation/capture tasks. 
+#--- In addition, download required Vagrant version for use
+#--- from WSL.
+$public = "C:\Users\Public"
+Invoke-WebRequest -Uri https://aka.ms/wsl-ubuntu-1804 -OutFile "$public\ubuntu-18.04.appx" -UseBasicParsing
+Invoke-WebRequest -Uri https://releases.hashicorp.com/vagrant/2.1.3/vagrant_2.1.3_x86_64.deb -OutFile "$public\vagrant_2.1.3.deb" -UseBasicParsing
+
+#--- Restore Temporary Settings ---
+Enable-UAC
+Enable-MicrosoftUpdate
+Install-WindowsUpdate -acceptEula

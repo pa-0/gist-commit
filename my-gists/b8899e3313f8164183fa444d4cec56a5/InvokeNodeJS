@@ -1,0 +1,22 @@
+function Invoke-NodeJS {
+    param(
+        $PowerShellCommand,
+        [Switch]$ReturnAsJSON
+    )
+
+    if($ReturnAsJSON) {$PowerShellCommand += " | ConvertTo-Json"}
+
+    $tmp = [IO.Path]::GetTempFileName()
+
+    @"
+        var target = 'powershell "$PowerShellCommand"'
+        require('child_process').exec(target, function(err, sysout) { console.log(sysout); });
+
+"@ | Set-Content $tmp
+
+    node $tmp
+
+    Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+}
+
+Invoke-NodeJS -ReturnAsJSON "ps | ? handles -gt 1100 | select name, cpu, handles"

@@ -1,0 +1,22 @@
+<Window x:Class="tosproxy.ProcessChooser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:tosproxy"
+        xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=System"
+        Title="ProcessChooser" Height="300" Width="300">
+    <Grid>
+        
+        <DataGrid x:Name="ProcessListView" VerticalAlignment="Top" ItemsSource="{Binding ProcessList}"
+                  AutoGenerateColumns="False" CanUserResizeColumns="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="40" Header="PID" Binding="{Binding Id}" />
+                <DataGridTextColumn Width="*" Header="Name" Binding="{Binding ProcessName}" />
+            </DataGrid.Columns>
+            
+        </DataGrid>
+        
+    </Grid>
+</Window>

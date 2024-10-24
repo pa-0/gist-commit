@@ -1,0 +1,13 @@
+<snippet>
+	<content><![CDATA[
+	for (let key in ${1:obj} ) {
+	  if (${1:obj} .hasOwnProperty(key)) {
+	    tls[key]
+	  }
+	}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>fore</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.js</scope>
+</snippet>

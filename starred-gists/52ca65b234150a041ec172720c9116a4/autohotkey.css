@@ -1,0 +1,151 @@
+/* Custom styles for AutoHotkey forum, by Lexikos.  Tested only on Firefox 13.
+License (or whatever): http://creativecommons.org/publicdomain/zero/1.0/ */
+
+@namespace url(http://www.w3.org/1999/xhtml);
+
+@-moz-document url-prefix("http://www.autohotkey.com/community/") {
+
+/* Some of the styles in the next section could be moved here, but then I'd have to do more
+testing on the various forms/pages. Most of my time is spent on viewtopic.php anyway. */
+
+body {
+    background-color: rgb(209, 215, 220) !important;
+}
+
+.tablebg {
+    border-spacing: 0 !important;
+}
+.row1:first-child td, .row2:first-child td {
+    padding-top: .5em !important;
+}
+td.spacer {
+    display: none;
+}
+
+tr:nth-last-child(2) > td.profile { /* "Top" link */
+    font-size: 0;
+}
+
+.codetitle {
+    font-size: 0 !important;
+    padding: 0 !important;
+    line-height: 0;
+}
+.codecontent { /* permanently auto-expand all code blocks */
+    max-height: none !important;
+}
+
+a.username-coloured[style="color: #e38;"], /* no pink, thanks. */
+a[style="color: #e38"] {
+    color: #e34 !important;
+}
+
+.gist pre {
+    font-size: 100% !important; /* why was it larger than ordinary code? */
+}
+.gist span {
+    font-weight: normal !important; /* more readable, imo */
+}
+.gist {
+    max-width: 890px; /* adjust as needed */
+}
+
+} /* end forum-wide styles */
+
+@-moz-document url-prefix("http://www.autohotkey.com/community/viewtopic.php") {
+
+#logodesc, /* ahk banner */
+#datebar, /* current time etc; the standard css currently also hides this, so this is redundant */
+.searchbar,
+.searchbar + br,
+#pagecontent > table:nth-last-child(2), /* "what to show" form */
+#pagecontent > table:first-child td:first-child img, /* new topic, post reply (at top) */
+#pagecontent > table:last-child td:first-child img, /* new topic, post reply (at bottom) */
+.cat .nav:last-child, /* next/prev topic, first unread post */
+.nav a[title="Print view"],
+.nav a[title="E-mail friend"],
+img[title="Offline"],
+img[title="Online"],
+img[alt="Profile"],
+img[alt="E-mail"],
+img[alt="Send private message"],
+img[alt="User avatar"], /* avatar overlaps with .postauthor due to a rule below */
+.postdetails, /* post count, location, etc. */
+.usersig, /* signature */
+td.gensmall div b /* Post subject:/Posted: */ {
+    display: none;
+}
+
+#menubar {
+    margin-top: 10px !important;
+}
+#menubar td:last-child a { /* show only the icon for FAQ, memberlist, etc. */
+    font-size: 0;
+}
+/* This next rule used to show the text for the search link, but since it no longer
+points to search.php the rule doesn't apply. That's fine with me because I only used
+the link to access search features which the custom Google search doesn't provide. */
+#menubar td:last-child a[href="./search.php"] {
+    font-size: 100%;
+}
+
+#pagecontent > table:nth-child(2) { /* Subscribe topic etc. */
+    position: relative;
+    top: -50px;
+    margin-bottom: -26px !important;
+}
+
+.cat .nav { /* hide the "| |" next to "Subscribe topic", since "Print view" and "E-mail friend" were hidden above */
+    color: transparent !important;
+}
+
+.tablebg, .cat {
+    background: none !important;
+}
+
+#pagecontent > table {
+    position: relative !important; /* allow the next bit to work */
+}
+.postauthor {
+    font-size: 12px;
+    position: absolute; /* "detach" it from the left column */
+    top: 8px;
+    left: 14px;
+}
+#pagecontent > table:nth-child(3) .postauthor { /* first post's author */
+    top: 35px;
+}
+td.profile table[width="150"] { /* shrink the left column to merely act as a margin */
+    width: 3em !important;
+}
+
+td.gensmall div[style="float: left;"] { /* subject line, rarely useful */
+    position: absolute;
+    right: 190px; /* push it to somewhere less distracting */
+}
+
+.postauthor a[href=""] { /* Guest post - link is useless, so don't colour it like a link */
+    color: black !important;
+}
+
+/* hide quote button etc except when hovering over the post */
+.gensmall > a > img {
+    opacity: 0.0;
+}
+.tablebg:hover .gensmall > a > img {
+    opacity: 0.2;
+}
+.tablebg:hover .gensmall > a > img:hover {
+    opacity: 1.0;
+}
+
+/* Shove the report post button etc down to the next row.  Need a better selector.  This one
+gets the wrong table sometimes; :last-child prevents it from having any effect in those cases. */
+.postbody + br + br + table:last-child {
+    margin-bottom: -37px !important;
+}
+.row1 div.gensmall:last-child, .row2 div.gensmall:last-child {
+    margin-right: 100px !important; /* make room */
+}
+
+} /* end viewtopic.php */

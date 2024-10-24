@@ -1,0 +1,19 @@
+debugger - attach at settings of vs code
+"launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "pwa-node",
+        "request": "attach",
+        "name": "Attach to nodemon process((hint: which has ``nodemon --inpect``))",
+        "processId": "${command:PickProcess}",
+        "restart": true,
+        "protocol": "inspector",
+        "envFile": "${workspaceFolder}/.env"
+      }
+    ]
+  },
+
+  shortcuts
+  ===============
+  ctrl + r
