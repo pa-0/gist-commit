@@ -31,7 +31,7 @@ jobs:
         ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/my-gists
         GIST_URL=api.github.com/gists/starred
         ${{github.workspace}}/.github/workflows/gist_backup.sh  ${{github.workspace}}/starred-gists
-        find . -maxdepth 3 -mindepth 3 -name ".git" -type d  -execdir mv -- '{}' 'git' + ';'
+        find . -maxdepth 3 -mindepth 3 -name ".git" -type d -execdir mv -- -t 'git' {} +
       working-directory: ${{github.workspace}}
 
     - name: 'Commit Changes'
